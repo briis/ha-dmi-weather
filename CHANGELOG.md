@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-09
+
 ### Fixed
 - The chance of precipitation could stay empty for up to 30 minutes after a restart, when DMI answered "Server is busy" (HTTP 429). It is now retried after 5 minutes, without fetching the forecast again (pydmi-weather 0.3.1).
 
@@ -63,7 +65,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - DMI brand assets and attribution (CC BY 4.0) on all entities.
 - Release workflow that attaches `dmi_weather.zip` to each GitHub release, and CI for hassfest, Marketplace validation, tests and Ruff.
 
-[Unreleased]: https://github.com/briis/ha-dmi-weather/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/briis/ha-dmi-weather/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/briis/ha-dmi-weather/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/briis/ha-dmi-weather/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/briis/ha-dmi-weather/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/briis/ha-dmi-weather/compare/v0.1.1...v0.1.2
