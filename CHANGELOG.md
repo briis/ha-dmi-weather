@@ -5,7 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+- Requires `pydmi-weather==0.3.0`.
+
 ### Added
+- **Chance of precipitation** (0–100 %, in steps of 10) in the hourly and daily forecasts, and as a new sensor for the current hour. It is the chance of at least 0.1 mm, calculated from DMI's ensemble forecast. The daily value is the highest hourly chance that day. This adds one request to DMI per update (every 30 minutes).
 - README and info.md: section on the forecast length (about 2½ days, DMI's HARMONIE limit) and why dmi.dk's 7–10 day forecast is not available.
 
 ## [0.1.2] - 2026-11-09

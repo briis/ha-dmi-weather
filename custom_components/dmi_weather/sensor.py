@@ -120,6 +120,14 @@ SENSORS: tuple[DMISensorDescription, ...] = (
         value_fn=lambda h: h.precipitation_mm,
     ),
     DMISensorDescription(
+        key="precipitation_probability",
+        translation_key="precipitation_probability",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+        suggested_display_precision=0,
+        value_fn=lambda h: h.precipitation_probability_pct,
+    ),
+    DMISensorDescription(
         key="cloud_cover",
         suggested_display_precision=0,
         translation_key="cloud_cover",

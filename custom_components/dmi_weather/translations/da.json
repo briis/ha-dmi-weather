@@ -78,6 +78,9 @@
       },
       "model_run": {
         "name": "Modelkørsel"
+      },
+      "precipitation_probability": {
+        "name": "Nedbørssandsynlighed"
       }
     }
   }
