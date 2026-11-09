@@ -68,9 +68,11 @@ async def test_forecasts(hass: HomeAssistant, mock_dmi) -> None:
         assert fc[0]["temperature"] is not None
     hourly = (
         await hass.services.async_call(
-            WEATHER_DOMAIN, SERVICE_GET_FORECASTS,
+            WEATHER_DOMAIN,
+            SERVICE_GET_FORECASTS,
             {"entity_id": "weather.dmi_roskilde", "type": "hourly"},
-            blocking=True, return_response=True,
+            blocking=True,
+            return_response=True,
         )
     )["weather.dmi_roskilde"]["forecast"]
     assert hourly[0]["condition"] == "cloudy"

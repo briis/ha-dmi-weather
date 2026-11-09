@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Generator
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -40,14 +40,16 @@ def make_coverage(run: datetime) -> dict:
     }
     return {
         "type": "Coverage",
-        "domain": {"axes": {"t": {"values": times}, "x": {"values": [12.08]}, "y": {"values": [55.65]}}},
+        "domain": {
+            "axes": {"t": {"values": times}, "x": {"values": [12.08]}, "y": {"values": [55.65]}}
+        },
         "ranges": {k: {"values": v, "shape": [steps, 1, 1]} for k, v in values.items()},
     }
 
 
 @pytest.fixture
 def forecast():
-    run = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0) - timedelta(hours=2)
+    run = datetime.now(UTC).replace(minute=0, second=0, microsecond=0) - timedelta(hours=2)
     return parse_coverage(make_coverage(run))
 
 

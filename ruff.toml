@@ -1,0 +1,24 @@
+# Ruff settings for ha-dmi-weather (used by .github/workflows/lint.yml)
+target-version = "py313"
+line-length = 100
+
+[lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "UP",       # pyupgrade
+    "B",        # bugbear
+    "SIM",      # simplify
+    "RUF",      # ruff-specific
+    "PL",       # pylint (selected)
+]
+ignore = [
+    "PLR2004",  # magic values in comparisons (fine in tests)
+    "PLR0913",  # many arguments
+]
+
+[lint.isort]
+known-first-party = ["custom_components", "pydmi"]
+force-sort-within-sections = true
+combine-as-imports = true
