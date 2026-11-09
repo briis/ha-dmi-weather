@@ -1,4 +1,4 @@
-# DMI Weather for Home Assistant
+# <img src="https://raw.githubusercontent.com/briis/ha-dmi-weather/main/custom_components/dmi_weather/brand/icon.png" alt="DMI" width="40" height="40" align="absmiddle"> DMI Weather for Home Assistant
 
 A Home Assistant integration that adds a **weather entity** and **sensors** with forecast data
 from DMI (Danmarks Meteorologiske Institut). The data comes from DMI's free
