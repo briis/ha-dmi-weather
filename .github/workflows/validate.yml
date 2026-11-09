@@ -1,8 +1,14 @@
 name: Validate
 
+# Documentation-only changes (*.md) don't trigger a run. The weekly schedule
+# still validates everything, including info.md and README.md.
 on:
   push:
+    paths-ignore:
+      - "**.md"
   pull_request:
+    paths-ignore:
+      - "**.md"
   schedule:
     - cron: "0 4 * * 1"
   workflow_dispatch:

@@ -1,12 +1,17 @@
 name: Lint
 
+# Documentation-only changes (*.md) don't trigger a run.
 on:
   push:
     branches:
       - "main"
+    paths-ignore:
+      - "**.md"
   pull_request:
     branches:
       - "main"
+    paths-ignore:
+      - "**.md"
 
 permissions: {}
 
