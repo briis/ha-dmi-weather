@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+- **Observed values** from DMI's weather stations, every 10 minutes. For each measurement, the nearest station (within 50 km) that measures it is used, for example Roskilde Lufthavn for temperature and wind, and Sjælsmark for solar radiation.
+- The weather entity's **current conditions** now come from these measurements, with the forecast as a fallback for anything not measured. The condition is derived from what is measured right now (precipitation in the last 10 minutes, cloud cover, visibility, wind).
+- New sensors: **Observed temperature, humidity, pressure, wind speed, wind gust, wind bearing, precipitation 10 min, precipitation 1 hour, cloud cover, solar radiation**, plus dew point, visibility and sunshine (disabled by default). Each shows the station, distance and time of the measurement as attributes.
+
+### Changed
+- Requires `pydmi-weather==0.4.0`.
+- About 12 extra requests to DMI per hour (one per station every 10 minutes) plus the station list once a day.
+
 ## [0.2.2] - 2026-11-09
 
 ### Fixed

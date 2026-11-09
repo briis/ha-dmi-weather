@@ -21,6 +21,8 @@ from custom_components.dmi_weather.const import CONF_DMI_URL, DOMAIN
 from custom_components.dmi_weather.dmi_link import suggest_dmi_url
 from pydmi import DMIConnectionError, DMIInvalidLocationError
 
+from .conftest import make_observations_data
+
 
 async def _setup(hass: HomeAssistant) -> MockConfigEntry:
     entry = MockConfigEntry(
@@ -216,3 +218,56 @@ async def test_setup_check_skips_ensemble(hass: HomeAssistant, mock_dmi) -> None
             {CONF_NAME: "Home", CONF_LOCATION: {CONF_LATITUDE: 55.64, CONF_LONGITUDE: 12.08}},
         )
     assert flow_cls.call_args.kwargs["include_precipitation_probability"] is False
+
+
+async def test_weather_uses_observations(hass: HomeAssistant, mock_dmi, mock_obs) -> None:
+    await _setup(hass)
+    state = hass.states.get("weather.dmi_roskilde")
+    assert state.attributes["temperature"] == 6.6  # observed, not forecast 7.0
+    assert state.attributes["humidity"] == 81  # 80.7 observed
+    assert state.state == "cloudy"
+
+    sensor = hass.states.get("sensor.dmi_roskilde_observed_temperature")
+    assert sensor.state == "6.6"
+    assert sensor.attributes["station"] == "Roskilde Lufthavn"
+    assert sensor.attributes["distance_km"] == 17.1
+    assert (
+        hass.states.get("sensor.dmi_roskilde_observed_solar_radiation").attributes["station"]
+        == "Sjælsmark"
+    )
+    # forecast sensors still there
+    assert hass.states.get("sensor.dmi_roskilde_temperature").state == "7.0"
+
+
+async def test_observed_rain_sets_condition(hass: HomeAssistant, mock_dmi, mock_obs) -> None:
+    mock_obs.get_observations = AsyncMock(
+        return_value=make_observations_data(precipitation_10min_mm=0.2)
+    )  # 1.2 mm/h
+    await _setup(hass)
+    assert hass.states.get("weather.dmi_roskilde").state == "rainy"
+
+
+async def test_falls_back_to_forecast_without_observations(hass: HomeAssistant, mock_dmi) -> None:
+    entry = await _setup(hass)  # observation client fails (autouse fixture)
+    assert entry.state is ConfigEntryState.LOADED
+    state = hass.states.get("weather.dmi_roskilde")
+    assert state.attributes["temperature"] == 7.0  # forecast
+    assert hass.states.get("sensor.dmi_roskilde_observed_temperature").state == "unavailable"
+
+
+async def test_missing_single_value_falls_back(hass: HomeAssistant, mock_dmi, mock_obs) -> None:
+    mock_obs.get_observations = AsyncMock(return_value=make_observations_data(pressure_hpa=None))
+    await _setup(hass)
+    state = hass.states.get("weather.dmi_roskilde")
+    assert state.attributes["pressure"] == 1023.2  # forecast value (observed is 1020.9)
+    assert state.attributes["temperature"] == 6.6  # still observed
+    assert hass.states.get("sensor.dmi_roskilde_observed_pressure").state == "unavailable"
+
+
+async def test_no_stations_nearby(hass: HomeAssistant, mock_dmi, mock_obs) -> None:
+    mock_obs.get_observations = AsyncMock(side_effect=DMIInvalidLocationError("none"))
+    entry = await _setup(hass)
+    assert entry.runtime_data.observations.no_stations
+    assert entry.runtime_data.observations.update_interval is None  # stops polling
+    assert hass.states.get("sensor.dmi_roskilde_observed_temperature") is None  # not created
+    assert hass.states.get("weather.dmi_roskilde").attributes["temperature"] == 7.0

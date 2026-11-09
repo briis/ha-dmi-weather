@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from pydmi import parse_coverage
+from pydmi import DMIConnectionError, Observations, ObservedValue, parse_coverage
 
 
 @pytest.fixture(autouse=True)
@@ -73,3 +73,51 @@ def forecast_with_probability(forecast):
         replace(h, precipitation_probability_pct=30.0) for h in forecast.all_hours
     ]
     return forecast
+
+
+def make_observations_data(**overrides) -> Observations:
+    """Observations as from Roskilde Lufthavn / Sjælsmark."""
+    now = datetime.now(UTC)
+    values = {
+        "temperature_c": 6.6,
+        "humidity_pct": 80.7,
+        "pressure_hpa": 1020.9,
+        "wind_speed_ms": 2.57,
+        "wind_bearing_deg": 125.0,
+        "wind_gust_ms": 3.6,
+        "precipitation_10min_mm": 0.0,
+        "cloud_cover_pct": 100.0,
+        "visibility_m": 20700.0,
+        "global_radiation_wm2": 54.0,
+    }
+    values.update(overrides)
+    obs = Observations(fetched_at=now)
+    for name, value in values.items():
+        if value is None:
+            continue
+        station = (
+            ("06188", "Sjælsmark", 22.3)
+            if name == "global_radiation_wm2"
+            else ("06170", "Roskilde Lufthavn", 17.1)
+        )
+        obs.values[name] = ObservedValue(value, now, station[0], station[1], station[2])
+    return obs
+
+
+@pytest.fixture
+def mock_obs() -> Generator[AsyncMock]:
+    """Patch the pydmi observation client used by the integration."""
+    with patch("custom_components.dmi_weather.coordinator.DMIObservationsAsync") as cls:
+        cls.return_value.get_observations = AsyncMock(return_value=make_observations_data())
+        yield cls.return_value
+
+
+@pytest.fixture(autouse=True)
+def _no_real_observations(request):
+    """Tests that don't ask for mock_obs get an observation client that fails."""
+    if "mock_obs" in request.fixturenames:
+        yield
+        return
+    with patch("custom_components.dmi_weather.coordinator.DMIObservationsAsync") as cls:
+        cls.return_value.get_observations = AsyncMock(side_effect=DMIConnectionError("offline"))
+        yield

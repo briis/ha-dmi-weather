@@ -16,6 +16,9 @@ CONF_DMI_URL: Final = "dmi_url"
 # within half an hour and keeps the load on DMI's free API negligible.
 UPDATE_INTERVAL: Final = timedelta(minutes=30)
 
+# Stations report every 10 minutes.
+OBS_UPDATE_INTERVAL: Final = timedelta(minutes=10)
+
 # While the chance of precipitation is missing (DMI busy), poll this often.
 # pydmi then retries only the ensemble request; the forecast stays cached.
 PROBABILITY_RETRY_INTERVAL: Final = timedelta(minutes=5)

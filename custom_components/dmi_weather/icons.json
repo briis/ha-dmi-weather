@@ -34,6 +34,18 @@
       },
       "precipitation_probability": {
         "default": "mdi:umbrella-outline"
+      },
+      "observed_cloud_cover": {
+        "default": "mdi:weather-cloudy"
+      },
+      "observed_precipitation_10min": {
+        "default": "mdi:weather-pouring"
+      },
+      "observed_precipitation_1h": {
+        "default": "mdi:weather-pouring"
+      },
+      "observed_sunshine": {
+        "default": "mdi:weather-sunny"
       }
     }
   }

@@ -92,6 +92,227 @@
       },
       "precipitation_probability": {
         "name": "Nedbørssandsynlighed"
+      },
+      "observed_temperature": {
+        "name": "Målt temperatur",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
+      },
+      "observed_dew_point": {
+        "name": "Målt dugpunkt",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
+      },
+      "observed_humidity": {
+        "name": "Målt luftfugtighed",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
+      },
+      "observed_pressure": {
+        "name": "Målt lufttryk",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
+      },
+      "observed_wind_speed": {
+        "name": "Målt vindhastighed",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
+      },
+      "observed_wind_gust": {
+        "name": "Målt vindstød",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
+      },
+      "observed_wind_bearing": {
+        "name": "Målt vindretning",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
+      },
+      "observed_precipitation_10min": {
+        "name": "Målt nedbør 10 min",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
+      },
+      "observed_precipitation_1h": {
+        "name": "Målt nedbør 1 time",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
+      },
+      "observed_cloud_cover": {
+        "name": "Målt skydække",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
+      },
+      "observed_visibility": {
+        "name": "Målt sigtbarhed",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
+      },
+      "observed_solar_radiation": {
+        "name": "Målt solindstråling",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
+      },
+      "observed_sunshine": {
+        "name": "Målt solskin 10 min",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Stations-ID"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "observed": {
+            "name": "Målt"
+          }
+        }
       }
     }
   },
