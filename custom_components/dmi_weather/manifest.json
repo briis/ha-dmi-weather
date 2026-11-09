@@ -1,0 +1,13 @@
+{
+  "domain": "dmi_weather",
+  "name": "DMI Weather",
+  "codeowners": ["@briis"],
+  "config_flow": true,
+  "documentation": "https://github.com/briis/ha-dmi-weather",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/briis/ha-dmi-weather/issues",
+  "loggers": ["pydmi"],
+  "requirements": ["pydmi-weather==0.1.1"],
+  "version": "0.1.0"
+}

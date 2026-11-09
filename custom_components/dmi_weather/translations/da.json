@@ -1,0 +1,84 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "DMI Vejr",
+        "description": "Prognose fra DMI's gratis HARMONIE-model (ca. 2 km gitter, 60 timer frem). Data: DMI, CC BY 4.0.",
+        "data": {
+          "name": "Navn",
+          "location": "Placering"
+        },
+        "data_description": {
+          "location": "Punkt der skal laves prognose for. Skal ligge inden for DMI's HARMONIE DINI-modelområde (Nordvesteuropa)."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kunne ikke forbinde til DMI",
+      "invalid_location": "Placeringen ligger uden for DMI's prognosemodel",
+      "unknown": "Uventet fejl fra DMI"
+    },
+    "abort": {
+      "already_configured": "Denne placering er allerede konfigureret"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Temperatur"
+      },
+      "dew_point": {
+        "name": "Dugpunkt"
+      },
+      "pressure": {
+        "name": "Lufttryk"
+      },
+      "wind_speed": {
+        "name": "Vindhastighed"
+      },
+      "wind_gust": {
+        "name": "Vindstød"
+      },
+      "wind_bearing": {
+        "name": "Vindretning"
+      },
+      "precipitation_next_hour": {
+        "name": "Nedbør næste time"
+      },
+      "cloud_cover": {
+        "name": "Skydække"
+      },
+      "solar_radiation": {
+        "name": "Solindstråling"
+      },
+      "visibility": {
+        "name": "Sigtbarhed"
+      },
+      "lightning_probability": {
+        "name": "Sandsynlighed for lyn"
+      },
+      "condition": {
+        "name": "Vejrtype",
+        "state": {
+          "clear-night": "Klart, nat",
+          "cloudy": "Skyet",
+          "fog": "Tåge",
+          "hail": "Hagl",
+          "lightning": "Lyn",
+          "lightning-rainy": "Lyn og regn",
+          "partlycloudy": "Delvist skyet",
+          "pouring": "Skybrud",
+          "rainy": "Regn",
+          "snowy": "Sne",
+          "snowy-rainy": "Slud",
+          "sunny": "Sol",
+          "windy": "Blæsende",
+          "windy-variant": "Blæsende og skyet"
+        }
+      },
+      "model_run": {
+        "name": "Modelkørsel"
+      }
+    }
+  }
+}

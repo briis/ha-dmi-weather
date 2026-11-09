@@ -1,0 +1,5 @@
+{
+  "name": "DMI Weather",
+  "homeassistant": "2026.1.0",
+  "render_readme": true
+}

@@ -1,0 +1,84 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "DMI Weather",
+        "description": "Forecast from DMI's free HARMONIE model (about 2 km grid, 60 hours ahead). Data: DMI, CC BY 4.0.",
+        "data": {
+          "name": "Name",
+          "location": "Location"
+        },
+        "data_description": {
+          "location": "Point to forecast. Must be inside DMI's HARMONIE DINI model area (Northwestern Europe)."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to DMI",
+      "invalid_location": "The location is outside DMI's forecast model area",
+      "unknown": "Unexpected error from DMI"
+    },
+    "abort": {
+      "already_configured": "This location is already configured"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Temperature"
+      },
+      "dew_point": {
+        "name": "Dew point"
+      },
+      "pressure": {
+        "name": "Pressure"
+      },
+      "wind_speed": {
+        "name": "Wind speed"
+      },
+      "wind_gust": {
+        "name": "Wind gust"
+      },
+      "wind_bearing": {
+        "name": "Wind bearing"
+      },
+      "precipitation_next_hour": {
+        "name": "Precipitation next hour"
+      },
+      "cloud_cover": {
+        "name": "Cloud cover"
+      },
+      "solar_radiation": {
+        "name": "Solar radiation"
+      },
+      "visibility": {
+        "name": "Visibility"
+      },
+      "lightning_probability": {
+        "name": "Lightning probability"
+      },
+      "condition": {
+        "name": "Condition",
+        "state": {
+          "clear-night": "Clear, night",
+          "cloudy": "Cloudy",
+          "fog": "Fog",
+          "hail": "Hail",
+          "lightning": "Lightning",
+          "lightning-rainy": "Lightning, rainy",
+          "partlycloudy": "Partly cloudy",
+          "pouring": "Pouring",
+          "rainy": "Rainy",
+          "snowy": "Snowy",
+          "snowy-rainy": "Snowy, rainy",
+          "sunny": "Sunny",
+          "windy": "Windy",
+          "windy-variant": "Windy, cloudy"
+        }
+      },
+      "model_run": {
+        "name": "Model run"
+      }
+    }
+  }
+}
