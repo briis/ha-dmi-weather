@@ -19,7 +19,7 @@
           "dmi_url": "Address on dmi.dk"
         },
         "data_description": {
-          "dmi_url": "For example https://www.dmi.dk/lokation/show/DK/2620997/Gundsømagle"
+          "dmi_url": "For example {example_url}"
         }
       }
     },
@@ -27,7 +27,7 @@
       "cannot_connect": "Could not connect to DMI",
       "invalid_location": "The location is outside DMI's forecast model area",
       "unknown": "Unexpected error from DMI",
-      "invalid_url": "The address must start with https://www.dmi.dk/"
+      "invalid_url": "The address must start with {dmi_prefix}"
     },
     "abort": {
       "already_configured": "This location is already configured"
@@ -104,12 +104,12 @@
           "dmi_url": "Address on dmi.dk"
         },
         "data_description": {
-          "dmi_url": "For example https://www.dmi.dk/lokation/show/DK/2620997/Gundsømagle"
+          "dmi_url": "For example {example_url}"
         }
       }
     },
     "error": {
-      "invalid_url": "The address must start with https://www.dmi.dk/"
+      "invalid_url": "The address must start with {dmi_prefix}"
     }
   }
 }

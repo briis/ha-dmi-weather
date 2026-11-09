@@ -21,13 +21,20 @@ from pydmi import DMIConnectionError, DMIError, DMIInvalidLocationError
 from pydmi.client_async import DMIForecastAsync
 
 from .const import CONF_DMI_URL, DEFAULT_NAME, DOMAIN
-from .dmi_link import is_dmi_url, suggest_dmi_url
+from .dmi_link import DMI_DK_PREFIX, is_dmi_url, suggest_dmi_url
 
 _LOGGER = logging.getLogger(__name__)
 
 URL_SELECTOR = selector.TextSelector(
     selector.TextSelectorConfig(type=selector.TextSelectorType.URL)
 )
+
+
+# Hassfest forbids URLs in translation strings, so they are filled in as placeholders.
+PLACEHOLDERS = {
+    "dmi_prefix": DMI_DK_PREFIX,
+    "example_url": "https://www.dmi.dk/lokation/show/DK/2620997/Gundsømagle",
+}
 
 
 def _link_schema() -> vol.Schema:
@@ -120,6 +127,7 @@ class DMIConfigFlow(ConfigFlow, domain=DOMAIN):
                 _link_schema(), user_input or {CONF_DMI_URL: self._suggested_url}
             ),
             errors=errors,
+            description_placeholders=PLACEHOLDERS,
         )
 
 
@@ -148,4 +156,5 @@ class DMIOptionsFlow(OptionsFlowWithReload):
                 _link_schema(), user_input or {CONF_DMI_URL: current}
             ),
             errors=errors,
+            description_placeholders=PLACEHOLDERS,
         )

@@ -19,7 +19,7 @@
           "dmi_url": "Adresse på dmi.dk"
         },
         "data_description": {
-          "dmi_url": "F.eks. https://www.dmi.dk/lokation/show/DK/2620997/Gundsømagle"
+          "dmi_url": "F.eks. {example_url}"
         }
       }
     },
@@ -27,7 +27,7 @@
       "cannot_connect": "Kunne ikke forbinde til DMI",
       "invalid_location": "Placeringen ligger uden for DMI's prognosemodel",
       "unknown": "Uventet fejl fra DMI",
-      "invalid_url": "Adressen skal starte med https://www.dmi.dk/"
+      "invalid_url": "Adressen skal starte med {dmi_prefix}"
     },
     "abort": {
       "already_configured": "Denne placering er allerede konfigureret"
@@ -104,12 +104,12 @@
           "dmi_url": "Adresse på dmi.dk"
         },
         "data_description": {
-          "dmi_url": "F.eks. https://www.dmi.dk/lokation/show/DK/2620997/Gundsømagle"
+          "dmi_url": "F.eks. {example_url}"
         }
       }
     },
     "error": {
-      "invalid_url": "Adressen skal starte med https://www.dmi.dk/"
+      "invalid_url": "Adressen skal starte med {dmi_prefix}"
     }
   }
 }
