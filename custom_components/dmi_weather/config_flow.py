@@ -69,7 +69,10 @@ class DMIConfigFlow(ConfigFlow, domain=DOMAIN):
 
             try:
                 api = DMIForecastAsync(
-                    latitude, longitude, session=async_get_clientsession(self.hass)
+                    latitude,
+                    longitude,
+                    session=async_get_clientsession(self.hass),
+                    include_precipitation_probability=False,  # only validating the location
                 )
                 await api.get_forecast()
             except DMIInvalidLocationError:

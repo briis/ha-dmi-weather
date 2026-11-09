@@ -16,6 +16,10 @@ CONF_DMI_URL: Final = "dmi_url"
 # within half an hour and keeps the load on DMI's free API negligible.
 UPDATE_INTERVAL: Final = timedelta(minutes=30)
 
+# While the chance of precipitation is missing (DMI busy), poll this often.
+# pydmi then retries only the ensemble request; the forecast stays cached.
+PROBABILITY_RETRY_INTERVAL: Final = timedelta(minutes=5)
+
 # How often entities re-render the current conditions, which pydmi interpolates
 # between hourly steps. Local only - no API calls.
 REFRESH_INTERVAL: Final = timedelta(minutes=5)
