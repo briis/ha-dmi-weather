@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
-from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant
+from datetime import datetime
 
+from homeassistant.const import Platform
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.event import async_track_time_interval
+
+from .const import REFRESH_INTERVAL
 from .coordinator import DMIConfigEntry, DMICoordinator
 
 PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.WEATHER]
@@ -16,6 +20,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: DMIConfigEntry) -> bool:
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    @callback
+    def _refresh_entities(_now: datetime) -> None:
+        """Re-render entities so interpolated "now" values move between API calls.
+
+        Uses the forecast already in memory - this does not contact DMI.
+        """
+        coordinator.async_update_listeners()
+
+    entry.async_on_unload(async_track_time_interval(hass, _refresh_entities, REFRESH_INTERVAL))
     return True
 
 

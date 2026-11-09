@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
 from unittest.mock import AsyncMock, patch
 
 from homeassistant.components.weather import (
@@ -12,7 +13,8 @@ from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_LATITUDE, CONF_LOCATION, CONF_LONGITUDE, CONF_NAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from homeassistant.util import dt as dt_util
+from pytest_homeassistant_custom_component.common import MockConfigEntry, async_fire_time_changed
 
 from custom_components.dmi_weather.const import DOMAIN
 from pydmi import DMIConnectionError, DMIInvalidLocationError
@@ -117,3 +119,11 @@ async def test_units_and_icons(hass: HomeAssistant, mock_dmi) -> None:
     for name in ("wind_speed", "wind_gust"):
         state = hass.states.get(f"sensor.dmi_roskilde_{name}")
         assert state.attributes["unit_of_measurement"] == "m/s", name
+
+
+async def test_current_values_refresh_without_api_calls(hass: HomeAssistant, mock_dmi) -> None:
+    await _setup(hass)
+    calls = mock_dmi.get_forecast.await_count
+    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(minutes=6))
+    await hass.async_block_till_done()
+    assert mock_dmi.get_forecast.await_count == calls  # refresh is local only
