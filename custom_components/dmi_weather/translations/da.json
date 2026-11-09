@@ -12,14 +12,20 @@
           "location": "Punkt der skal laves prognose for. Skal ligge inden for DMI's HARMONIE DINI-modelområde (Nordvesteuropa)."
         }
       },
-      "link": {
-        "title": "Link til dmi.dk",
-        "description": "Enhedens \"Besøg\"-knap åbner denne side på dmi.dk, hvor DMI's længere prognose også findes. Den er udfyldt med det nærmeste sted. Vil du bruge et andet sted, så find det på dmi.dk og indsæt adressen her. Lad feltet være tomt for at bruge det nærmeste sted.",
+      "settings": {
+        "title": "Indstillinger",
+        "description": "Enhedens \"Besøg\"-knap åbner denne side på dmi.dk, hvor DMI's længere prognose også findes. Den er udfyldt med det nærmeste sted. Vil du bruge et andet sted, så find det på dmi.dk og indsæt adressen her. Lad feltet være tomt for at bruge det nærmeste sted.\n\nObservationer og lyn er valgfrie. Slå dem fra, hvis du kun vil have prognosen.",
         "data": {
-          "dmi_url": "Adresse på dmi.dk"
+          "dmi_url": "Adresse på dmi.dk",
+          "observations": "Observationer fra DMI's vejrstationer",
+          "lightning": "Lyn nær placeringen",
+          "lightning_radius": "Radius for lyn"
         },
         "data_description": {
-          "dmi_url": "F.eks. {example_url}"
+          "dmi_url": "F.eks. {example_url}",
+          "observations": "Målte aktuelle værdier fra de nærmeste stationer, hvert 10. minut",
+          "lightning": "Nedslag inden for radius, hvert 5. minut",
+          "lightning_radius": "Hvor langt væk nedslag tælles med (10-300 km)"
         }
       }
     },
@@ -313,6 +319,86 @@
             "name": "Målt"
           }
         }
+      },
+      "lightning_strikes_1h": {
+        "name": "Lynnedslag sidste time",
+        "state_attributes": {
+          "radius_km": {
+            "name": "Radius (km)"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "bearing_deg": {
+            "name": "Retning (°)"
+          },
+          "observed": {
+            "name": "Registreret"
+          },
+          "current_ka": {
+            "name": "Strømstyrke (kA)"
+          }
+        }
+      },
+      "lightning_strikes_10min": {
+        "name": "Lynnedslag sidste 10 min",
+        "state_attributes": {
+          "radius_km": {
+            "name": "Radius (km)"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "bearing_deg": {
+            "name": "Retning (°)"
+          },
+          "observed": {
+            "name": "Registreret"
+          },
+          "current_ka": {
+            "name": "Strømstyrke (kA)"
+          }
+        }
+      },
+      "lightning_strike_nearest_distance": {
+        "name": "Nærmeste lynnedslag",
+        "state_attributes": {
+          "radius_km": {
+            "name": "Radius (km)"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "bearing_deg": {
+            "name": "Retning (°)"
+          },
+          "observed": {
+            "name": "Registreret"
+          },
+          "current_ka": {
+            "name": "Strømstyrke (kA)"
+          }
+        }
+      },
+      "lightning_strike_last": {
+        "name": "Seneste lynnedslag",
+        "state_attributes": {
+          "radius_km": {
+            "name": "Radius (km)"
+          },
+          "distance_km": {
+            "name": "Afstand (km)"
+          },
+          "bearing_deg": {
+            "name": "Retning (°)"
+          },
+          "observed": {
+            "name": "Registreret"
+          },
+          "current_ka": {
+            "name": "Strømstyrke (kA)"
+          }
+        }
       }
     }
   },
@@ -320,12 +406,18 @@
     "step": {
       "init": {
         "title": "DMI Vejr indstillinger",
-        "description": "Enhedens \"Besøg\"-knap åbner denne side på dmi.dk, hvor DMI's længere prognose også findes. Den er udfyldt med det nærmeste sted. Vil du bruge et andet sted, så find det på dmi.dk og indsæt adressen her. Lad feltet være tomt for at bruge det nærmeste sted.",
+        "description": "Enhedens \"Besøg\"-knap åbner denne side på dmi.dk, hvor DMI's længere prognose også findes. Den er udfyldt med det nærmeste sted. Vil du bruge et andet sted, så find det på dmi.dk og indsæt adressen her. Lad feltet være tomt for at bruge det nærmeste sted.\n\nObservationer og lyn er valgfrie. Slå dem fra, hvis du kun vil have prognosen.",
         "data": {
-          "dmi_url": "Adresse på dmi.dk"
+          "dmi_url": "Adresse på dmi.dk",
+          "observations": "Observationer fra DMI's vejrstationer",
+          "lightning": "Lyn nær placeringen",
+          "lightning_radius": "Radius for lyn"
         },
         "data_description": {
-          "dmi_url": "F.eks. {example_url}"
+          "dmi_url": "F.eks. {example_url}",
+          "observations": "Målte aktuelle værdier fra de nærmeste stationer, hvert 10. minut",
+          "lightning": "Nedslag inden for radius, hvert 5. minut",
+          "lightning_radius": "Hvor langt væk nedslag tælles med (10-300 km)"
         }
       }
     },

@@ -12,6 +12,18 @@ DEFAULT_NAME: Final = "DMI"
 # Option: link to the location on dmi.dk ("Visit" button). Empty = nearest place.
 CONF_DMI_URL: Final = "dmi_url"
 
+# Optional data sources (options). Both on by default; existing entries without
+# the option behave as "on".
+CONF_OBSERVATIONS: Final = "observations"
+CONF_LIGHTNING: Final = "lightning"
+CONF_LIGHTNING_RADIUS: Final = "lightning_radius"
+DEFAULT_LIGHTNING_RADIUS: Final = 50
+
+# Lightning: poll interval, and what counts as "thunder here" for the condition.
+LIGHTNING_UPDATE_INTERVAL: Final = timedelta(minutes=5)
+LIGHTNING_NEARBY_KM: Final = 20.0
+LIGHTNING_RECENT: Final = timedelta(minutes=15)
+
 # HARMONIE runs every 3 hours. Polling every 30 minutes picks up a new run
 # within half an hour and keeps the load on DMI's free API negligible.
 UPDATE_INTERVAL: Final = timedelta(minutes=30)

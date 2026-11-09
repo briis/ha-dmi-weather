@@ -19,7 +19,9 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import dt as dt_util
 
 from pydmi import ForecastHour, derive_condition
+from pydmi.const import PRECIP_THRESHOLD_MM
 
+from .const import LIGHTNING_NEARBY_KM, LIGHTNING_RECENT
 from .coordinator import DMIConfigEntry, DMICoordinator
 from .entity import DMIEntity
 
@@ -53,8 +55,9 @@ class DMIWeather(DMIEntity, SingleCoordinatorWeatherEntity[DMICoordinator]):
     async def async_added_to_hass(self) -> None:
         """Also re-render when new observations arrive."""
         await super().async_added_to_hass()
-        if (obs := self.coordinator.observations) is not None:
-            self.async_on_remove(obs.async_add_listener(self._handle_coordinator_update))
+        for extra in (self.coordinator.observations, self.coordinator.lightning):
+            if extra is not None:
+                self.async_on_remove(extra.async_add_listener(self._handle_coordinator_update))
 
     @property
     def _now(self) -> ForecastHour | None:
@@ -80,7 +83,7 @@ class DMIWeather(DMIEntity, SingleCoordinatorWeatherEntity[DMICoordinator]):
         precip_type = now.precipitation_type or (
             "snow" if temperature is not None and temperature <= 0 else "rain"
         )
-        return derive_condition(
+        condition = derive_condition(
             precipitation_mm=precip_rate,
             precipitation_type=precip_type,
             cloud_cover_pct=self._value("cloud_cover_pct", "cloud_cover_pct"),
@@ -88,6 +91,21 @@ class DMIWeather(DMIEntity, SingleCoordinatorWeatherEntity[DMICoordinator]):
             lightning_probability_pct=now.lightning_probability_pct,
             wind_speed_ms=self._value("wind_speed_ms", "wind_speed_ms"),
             daylight=now.is_daylight,
+        )
+        # Lightning actually observed nearby beats the forecast's probability.
+        if self._thunder_nearby():
+            raining = precip_rate is not None and precip_rate >= PRECIP_THRESHOLD_MM
+            return "lightning-rainy" if raining else "lightning"
+        return condition
+
+    def _thunder_nearby(self) -> bool:
+        lightning = self.coordinator.lightning
+        if lightning is None or not lightning.last_update_success or lightning.data is None:
+            return False
+        cutoff = dt_util.utcnow() - LIGHTNING_RECENT
+        return any(
+            s.distance_km <= LIGHTNING_NEARBY_KM and s.observed >= cutoff
+            for s in lightning.data.strikes
         )
 
     @property

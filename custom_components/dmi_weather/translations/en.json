@@ -12,14 +12,20 @@
           "location": "Point to forecast. Must be inside DMI's HARMONIE DINI model area (Northwestern Europe)."
         }
       },
-      "link": {
-        "title": "Link to dmi.dk",
-        "description": "The device's \"Visit\" button opens this page on dmi.dk, which also has DMI's longer forecast. It is pre-filled with the nearest place. To use another place, find it on dmi.dk and paste the address here. Leave empty to use the nearest place.",
+      "settings": {
+        "title": "Settings",
+        "description": "The device's \"Visit\" button opens this page on dmi.dk, which also has DMI's longer forecast. It is pre-filled with the nearest place. To use another place, find it on dmi.dk and paste the address here. Leave empty to use the nearest place.\n\nObservations and lightning are optional. Turn them off if you only want the forecast.",
         "data": {
-          "dmi_url": "Address on dmi.dk"
+          "dmi_url": "Address on dmi.dk",
+          "observations": "Observations from DMI weather stations",
+          "lightning": "Lightning near the location",
+          "lightning_radius": "Lightning radius"
         },
         "data_description": {
-          "dmi_url": "For example {example_url}"
+          "dmi_url": "For example {example_url}",
+          "observations": "Measured current values from the nearest stations, every 10 minutes",
+          "lightning": "Strikes within the radius, every 5 minutes",
+          "lightning_radius": "How far away strikes are counted (10-300 km)"
         }
       }
     },
@@ -313,6 +319,86 @@
             "name": "Observed"
           }
         }
+      },
+      "lightning_strikes_1h": {
+        "name": "Lightning strikes last hour",
+        "state_attributes": {
+          "radius_km": {
+            "name": "Radius (km)"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "bearing_deg": {
+            "name": "Direction (°)"
+          },
+          "observed": {
+            "name": "Observed"
+          },
+          "current_ka": {
+            "name": "Current (kA)"
+          }
+        }
+      },
+      "lightning_strikes_10min": {
+        "name": "Lightning strikes last 10 min",
+        "state_attributes": {
+          "radius_km": {
+            "name": "Radius (km)"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "bearing_deg": {
+            "name": "Direction (°)"
+          },
+          "observed": {
+            "name": "Observed"
+          },
+          "current_ka": {
+            "name": "Current (kA)"
+          }
+        }
+      },
+      "lightning_strike_nearest_distance": {
+        "name": "Nearest lightning strike",
+        "state_attributes": {
+          "radius_km": {
+            "name": "Radius (km)"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "bearing_deg": {
+            "name": "Direction (°)"
+          },
+          "observed": {
+            "name": "Observed"
+          },
+          "current_ka": {
+            "name": "Current (kA)"
+          }
+        }
+      },
+      "lightning_strike_last": {
+        "name": "Last lightning strike",
+        "state_attributes": {
+          "radius_km": {
+            "name": "Radius (km)"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "bearing_deg": {
+            "name": "Direction (°)"
+          },
+          "observed": {
+            "name": "Observed"
+          },
+          "current_ka": {
+            "name": "Current (kA)"
+          }
+        }
       }
     }
   },
@@ -320,12 +406,18 @@
     "step": {
       "init": {
         "title": "DMI Weather options",
-        "description": "The device's \"Visit\" button opens this page on dmi.dk, which also has DMI's longer forecast. It is pre-filled with the nearest place. To use another place, find it on dmi.dk and paste the address here. Leave empty to use the nearest place.",
+        "description": "The device's \"Visit\" button opens this page on dmi.dk, which also has DMI's longer forecast. It is pre-filled with the nearest place. To use another place, find it on dmi.dk and paste the address here. Leave empty to use the nearest place.\n\nObservations and lightning are optional. Turn them off if you only want the forecast.",
         "data": {
-          "dmi_url": "Address on dmi.dk"
+          "dmi_url": "Address on dmi.dk",
+          "observations": "Observations from DMI weather stations",
+          "lightning": "Lightning near the location",
+          "lightning_radius": "Lightning radius"
         },
         "data_description": {
-          "dmi_url": "For example {example_url}"
+          "dmi_url": "For example {example_url}",
+          "observations": "Measured current values from the nearest stations, every 10 minutes",
+          "lightning": "Strikes within the radius, every 5 minutes",
+          "lightning_radius": "How far away strikes are counted (10-300 km)"
         }
       }
     },

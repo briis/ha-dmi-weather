@@ -4,6 +4,8 @@ Weather forecast for Home Assistant from **DMI** (Danmarks Meteorologiske Instit
 
 - **Weather entity:** current conditions plus hourly and daily forecasts
 - **Observed values** from the nearest DMI weather stations, every 10 minutes, used for the current conditions
+- **Lightning** strikes near you (radius 10–300 km), every 5 minutes
+- Observations and lightning are optional, for forecast only
 - **Sensors:** temperature, humidity, pressure, wind, precipitation, cloud cover, solar radiation and more. Plot them next to your own weather station.
 - **Model:** HARMONIE DINI. About 2 km grid, hourly steps, about 60 hours (2½ days) ahead, updated every 3 hours.
 - **Smooth current values:** current values are interpolated between the hourly forecasts and refreshed every 5 minutes, without extra requests to DMI.
