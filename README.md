@@ -16,11 +16,17 @@ from DMI (Danmarks Meteorologiske Institut). The data comes from DMI's free
 
 ## Installation
 
-### HACS (custom repository)
+### Marketplace (Home Assistant 2026.11 and later)
 
-1. HACS → ⋮ → **Custom repositories** → add `https://github.com/briis/ha-dmi-weather`, type **Integration**.
-2. Install **DMI Weather** and restart Home Assistant.
-3. **Settings → Devices & services → Add integration → DMI Weather**.
+DMI Weather is not in the Marketplace catalog yet, so add it as a custom repository:
+
+1. Go to **Settings → Marketplace** and select **Add from link** (upper-right corner).
+2. Enter `briis/ha-dmi-weather` and confirm. Adding a custom repository needs a GitHub connection;
+   the dialog asks you to connect if you have not already.
+3. Download **DMI Weather** and restart Home Assistant.
+4. **Settings → Devices & services → Add integration → DMI Weather**.
+
+On Home Assistant 2026.1–2026.10, add the same link as a custom repository (type *Integration*) in HACS.
 
 ### Manual
 

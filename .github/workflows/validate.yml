@@ -14,7 +14,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: home-assistant/actions/hassfest@master
 
-  hacs:
+  marketplace:
+    # The Marketplace (formerly HACS) still requires a valid hacs.json
     runs-on: ubuntu-latest
     steps:
       - uses: hacs/action@main
