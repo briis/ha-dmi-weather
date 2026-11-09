@@ -1,4 +1,4 @@
-# DMI Weather
+# <img src="https://raw.githubusercontent.com/briis/ha-dmi-weather/main/custom_components/dmi_weather/brand/icon.png" alt="DMI" width="40" height="40" align="absmiddle"> DMI Weather
 
 Weather forecast for Home Assistant from **DMI** (Danmarks Meteorologiske Institut), using DMI's free Open Data API. No API key needed.
 
