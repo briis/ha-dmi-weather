@@ -13,7 +13,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from pydmi import DMIError, DMIRateLimitError, Forecast
 from pydmi.client_async import DMIForecastAsync
 
-from .const import DOMAIN, UPDATE_INTERVAL
+from .const import DOMAIN, PROBABILITY_RETRY_INTERVAL, UPDATE_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -43,10 +43,16 @@ class DMICoordinator(DataUpdateCoordinator[Forecast]):
 
     async def _async_update_data(self) -> Forecast:
         try:
-            return await self.api.get_forecast()
+            forecast = await self.api.get_forecast()
         except DMIRateLimitError as err:
             raise UpdateFailed(
                 f"DMI rate limit reached: {err}", retry_after=err.retry_after
             ) from err
         except DMIError as err:
             raise UpdateFailed(f"Error fetching DMI forecast: {err}") from err
+        # Retry soon while the chance of precipitation is missing (only the
+        # ensemble is re-requested), otherwise back to the normal interval.
+        self.update_interval = (
+            PROBABILITY_RETRY_INTERVAL if self.api.probability_pending else UPDATE_INTERVAL
+        )
+        return forecast

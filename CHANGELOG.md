@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+- The chance of precipitation could stay empty for up to 30 minutes after a restart, when DMI answered "Server is busy" (HTTP 429). It is now retried after 5 minutes, without fetching the forecast again (pydmi-weather 0.3.1).
+
+### Changed
+- Fewer requests to DMI: the ensemble forecast (chance of precipitation) is fetched at most once an hour and reused in between, with a 2-second pause after the forecast request. The setup no longer requests the ensemble.
+- Requires `pydmi-weather==0.3.1`.
+
 ## [0.2.1] - 2026-11-09
 
 ### Added

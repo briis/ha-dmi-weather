@@ -195,3 +195,24 @@ async def test_precipitation_probability(
         return_response=True,
     )
     assert resp["weather.dmi_roskilde"]["forecast"][0]["precipitation_probability"] == 30.0
+
+
+async def test_polls_faster_while_probability_missing(hass: HomeAssistant, mock_dmi) -> None:
+    mock_dmi.probability_pending = True
+    entry = await _setup(hass)
+    assert entry.runtime_data.update_interval == timedelta(minutes=5)
+
+    mock_dmi.probability_pending = False
+    await entry.runtime_data.async_refresh()
+    assert entry.runtime_data.update_interval == timedelta(minutes=30)
+
+
+async def test_setup_check_skips_ensemble(hass: HomeAssistant, mock_dmi) -> None:
+    with patch("custom_components.dmi_weather.config_flow.DMIForecastAsync") as flow_cls:
+        flow_cls.return_value.get_forecast = AsyncMock()
+        result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": "user"})
+        await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {CONF_NAME: "Home", CONF_LOCATION: {CONF_LATITUDE: 55.64, CONF_LONGITUDE: 12.08}},
+        )
+    assert flow_cls.call_args.kwargs["include_precipitation_probability"] is False
