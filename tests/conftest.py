@@ -71,6 +71,7 @@ def mock_dmi(forecast) -> Generator[AsyncMock]:
         for cls in (coord_cls, flow_cls):
             cls.return_value.get_forecast = AsyncMock(return_value=forecast)
             cls.return_value.probability_pending = False
+            cls.return_value.cached = None
         yield coord_cls.return_value
 
 

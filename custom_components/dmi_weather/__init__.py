@@ -22,6 +22,8 @@ from .coordinator import (
     DMICoordinator,
     DMILightningCoordinator,
     DMIObservationCoordinator,
+    forget_clients,
+    get_clients,
 )
 from .dmi_link import suggest_dmi_url
 
@@ -46,6 +48,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: DMIConfigEntry) -> bool:
             hass, entry, entry.options.get(CONF_LIGHTNING_RADIUS, DEFAULT_LIGHTNING_RADIUS)
         )
         await coordinator.lightning.async_refresh()
+    # Sources turned off: drop their clients so turning them on again starts fresh.
+    clients = get_clients(hass, entry)
+    if coordinator.observations is None:
+        clients.observations = None
+    if coordinator.lightning is None:
+        clients.lightning = None
     _remove_disabled_entities(hass, entry, coordinator)
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -65,6 +73,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: DMIConfigEntry) -> bool:
 async def async_unload_entry(hass: HomeAssistant, entry: DMIConfigEntry) -> bool:
     """Unload a config entry."""
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: DMIConfigEntry) -> None:
+    """Entry deleted: forget its clients (they are kept across reloads otherwise)."""
+    forget_clients(hass, entry)
 
 
 def _remove_disabled_entities(

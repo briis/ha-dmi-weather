@@ -353,3 +353,70 @@ async def test_lightning_radius_option(hass: HomeAssistant, mock_dmi, mock_light
         await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
     assert cls.call_args.kwargs["radius_km"] == 120
+
+
+async def test_options_change_reuses_clients(
+    hass: HomeAssistant, mock_dmi, mock_obs, mock_lightning
+) -> None:
+    """Changing the lightning radius must not re-create the forecast/observation clients
+    (their caches would be lost and DMI hit with a burst of requests)."""
+    with (
+        patch("custom_components.dmi_weather.coordinator.DMIForecastAsync") as fc_cls,
+        patch("custom_components.dmi_weather.coordinator.DMIObservationsAsync") as obs_cls,
+        patch("custom_components.dmi_weather.coordinator.DMILightningAsync") as lt_cls,
+    ):
+        fc_cls.return_value = mock_dmi
+        obs_cls.return_value = mock_obs
+        lt_cls.side_effect = lambda *a, **kw: _lightning_client(kw["radius_km"])
+        entry = await _setup(hass)
+        result = await hass.config_entries.options.async_init(entry.entry_id)
+        await hass.config_entries.options.async_configure(
+            result["flow_id"],
+            {CONF_DMI_URL: "", "observations": True, "lightning": True, "lightning_radius": 20},
+        )
+        await hass.async_block_till_done()  # reload
+        assert entry.state is ConfigEntryState.LOADED
+        assert fc_cls.call_count == 1
+        assert obs_cls.call_count == 1
+        assert lt_cls.call_count == 2  # new radius -> new lightning client
+        assert entry.runtime_data.lightning.api.radius_km == 20
+
+
+def _lightning_client(radius_km: float) -> AsyncMock:
+    client = AsyncMock()
+    client.radius_km = radius_km
+    client.get_lightning = AsyncMock(return_value=make_lightning_data())
+    return client
+
+
+async def test_failed_update_keeps_last_forecast(hass: HomeAssistant, mock_dmi, forecast) -> None:
+    entry = await _setup(hass)
+    coordinator = entry.runtime_data
+    mock_dmi.cached = forecast
+    mock_dmi.get_forecast = AsyncMock(side_effect=DMIConnectionError("timeout"))
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+    assert coordinator.last_update_success
+    assert coordinator.update_interval == timedelta(minutes=2)
+    assert hass.states.get("weather.dmi_roskilde").state == "cloudy"  # still available
+
+    mock_dmi.get_forecast = AsyncMock(return_value=forecast)
+    await coordinator.async_refresh()
+    assert coordinator.update_interval == timedelta(minutes=30)  # back to normal
+
+
+async def test_failed_update_without_cache_is_unavailable(hass: HomeAssistant, mock_dmi) -> None:
+    entry = await _setup(hass)
+    mock_dmi.cached = None
+    mock_dmi.get_forecast = AsyncMock(side_effect=DMIConnectionError("timeout"))
+    await entry.runtime_data.async_refresh()
+    await hass.async_block_till_done()
+    assert hass.states.get("weather.dmi_roskilde").state == "unavailable"
+
+
+async def test_removing_entry_forgets_clients(hass: HomeAssistant, mock_dmi) -> None:
+    entry = await _setup(hass)
+    assert entry.entry_id in hass.data[DOMAIN]
+    await hass.config_entries.async_remove(entry.entry_id)
+    await hass.async_block_till_done()
+    assert entry.entry_id not in hass.data.get(DOMAIN, {})
