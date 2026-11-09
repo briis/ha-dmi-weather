@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-09
+
 ### Added
 - **Lightning** near the location, from DMI's Lightning Data API, every 5 minutes. New sensors: **Lightning strikes last hour**, **Nearest lightning strike** (distance, with direction, time and current as attributes) and **Last lightning strike** (time), plus **Lightning strikes last 10 min** (disabled by default).
 - A strike within 20 km in the last 15 minutes sets the weather condition to *lightning* / *lightning-rainy*.
@@ -85,7 +87,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - DMI brand assets and attribution (CC BY 4.0) on all entities.
 - Release workflow that attaches `dmi_weather.zip` to each GitHub release, and CI for hassfest, Marketplace validation, tests and Ruff.
 
-[Unreleased]: https://github.com/briis/ha-dmi-weather/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/briis/ha-dmi-weather/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/briis/ha-dmi-weather/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/briis/ha-dmi-weather/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/briis/ha-dmi-weather/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/briis/ha-dmi-weather/compare/v0.2.0...v0.2.1
