@@ -9,7 +9,14 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from pydmi import DMIConnectionError, Observations, ObservedValue, parse_coverage
+from pydmi import (
+    DMIConnectionError,
+    Lightning,
+    Observations,
+    ObservedValue,
+    Strike,
+    parse_coverage,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -120,4 +127,36 @@ def _no_real_observations(request):
         return
     with patch("custom_components.dmi_weather.coordinator.DMIObservationsAsync") as cls:
         cls.return_value.get_observations = AsyncMock(side_effect=DMIConnectionError("offline"))
+        yield
+
+
+def make_lightning_data(strikes: list[tuple[float, int]] | None = None) -> Lightning:
+    """strikes: (distance_km, minutes_ago). Default: none."""
+    now = datetime.now(UTC)
+    lt = Lightning(fetched_at=now, radius_km=50.0)
+    for distance, minutes in strikes or []:
+        lt.strikes.append(
+            Strike(now - timedelta(minutes=minutes), 55.8, 12.2, distance, 45, -10.0, 1, 0)
+        )
+    lt.strikes.sort(key=lambda s: s.observed, reverse=True)
+    return lt
+
+
+@pytest.fixture
+def mock_lightning() -> Generator[AsyncMock]:
+    with patch("custom_components.dmi_weather.coordinator.DMILightningAsync") as cls:
+        cls.return_value.get_lightning = AsyncMock(return_value=make_lightning_data())
+        cls.return_value.radius_km = 50.0
+        yield cls.return_value
+
+
+@pytest.fixture(autouse=True)
+def _no_real_lightning(request):
+    """Tests that don't ask for mock_lightning get a lightning client that fails."""
+    if "mock_lightning" in request.fixturenames:
+        yield
+        return
+    with patch("custom_components.dmi_weather.coordinator.DMILightningAsync") as cls:
+        cls.return_value.get_lightning = AsyncMock(side_effect=DMIConnectionError("offline"))
+        cls.return_value.radius_km = 50.0
         yield

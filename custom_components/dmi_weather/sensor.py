@@ -32,9 +32,14 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from pydmi import ATTRIBUTION, Forecast, ForecastHour
+from pydmi import ATTRIBUTION, Forecast, ForecastHour, Lightning, Strike
 
-from .coordinator import DMIConfigEntry, DMICoordinator, DMIObservationCoordinator
+from .coordinator import (
+    DMIConfigEntry,
+    DMICoordinator,
+    DMILightningCoordinator,
+    DMIObservationCoordinator,
+)
 from .entity import DMIEntity, dmi_device_info
 
 
@@ -205,6 +210,10 @@ async def async_setup_entry(
     """Set up DMI sensors."""
     coordinator = entry.runtime_data
     async_add_entities(DMISensor(coordinator, description) for description in SENSORS)
+    if coordinator.lightning is not None:
+        async_add_entities(
+            DMILightningSensor(coordinator, description) for description in LIGHTNING_SENSORS
+        )
     if coordinator.observations is not None and not coordinator.observations.no_stations:
         async_add_entities(
             DMIObservationSensor(coordinator, description) for description in OBSERVATION_SENSORS
@@ -389,3 +398,88 @@ class DMIObservationSensor(CoordinatorEntity[DMIObservationCoordinator], SensorE
             "distance_km": item.distance_km,
             "observed": item.observed.isoformat(),
         }
+
+
+# --- lightning (DMI Lightning Data API) -----------------------------------------
+
+
+@dataclass(frozen=True, kw_only=True)
+class DMILightningSensorDescription(SensorEntityDescription):
+    """`value_fn` reads the Lightning data; `strike_fn` picks a strike for attributes."""
+
+    value_fn: Callable[[Lightning], float | int | datetime | None]
+    strike_fn: Callable[[Lightning], Strike | None] | None = None
+
+
+LIGHTNING_SENSORS: tuple[DMILightningSensorDescription, ...] = (
+    DMILightningSensorDescription(
+        key="lightning_strikes_1h",
+        translation_key="lightning_strikes_1h",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="strikes",
+        value_fn=lambda lt: lt.count_1h,
+    ),
+    DMILightningSensorDescription(
+        key="lightning_strikes_10min",
+        translation_key="lightning_strikes_10min",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="strikes",
+        entity_registry_enabled_default=False,
+        value_fn=lambda lt: lt.count_10min,
+    ),
+    DMILightningSensorDescription(
+        key="lightning_strike_nearest_distance",
+        translation_key="lightning_strike_nearest_distance",
+        device_class=SensorDeviceClass.DISTANCE,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfLength.KILOMETERS,
+        suggested_display_precision=0,
+        value_fn=lambda lt: lt.nearest.distance_km if lt.nearest else None,
+        strike_fn=lambda lt: lt.nearest,
+    ),
+    DMILightningSensorDescription(
+        key="lightning_strike_last",
+        translation_key="lightning_strike_last",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        value_fn=lambda lt: lt.latest.observed if lt.latest else None,
+        strike_fn=lambda lt: lt.latest,
+    ),
+)
+
+
+class DMILightningSensor(CoordinatorEntity[DMILightningCoordinator], SensorEntity):
+    """Lightning within the configured radius during the last hour."""
+
+    _attr_attribution = ATTRIBUTION
+    _attr_has_entity_name = True
+    entity_description: DMILightningSensorDescription
+
+    def __init__(
+        self, forecast: DMICoordinator, description: DMILightningSensorDescription
+    ) -> None:
+        assert forecast.lightning is not None
+        super().__init__(forecast.lightning)
+        self.entity_description = description
+        self._attr_unique_id = f"{forecast.config_entry.entry_id}_{description.key}"
+        self._attr_device_info = dmi_device_info(forecast)
+
+    @property
+    def native_value(self) -> float | int | datetime | None:
+        data = self.coordinator.data
+        return self.entity_description.value_fn(data) if data else None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, object] | None:
+        data = self.coordinator.data
+        attrs: dict[str, object] = {"radius_km": self.coordinator.api.radius_km}
+        if data is None or self.entity_description.strike_fn is None:
+            return attrs
+        strike = self.entity_description.strike_fn(data)
+        if strike is not None:
+            attrs.update(
+                distance_km=strike.distance_km,
+                bearing_deg=strike.bearing_deg,
+                observed=strike.observed.isoformat(),
+                current_ka=strike.current_ka,
+            )
+        return attrs

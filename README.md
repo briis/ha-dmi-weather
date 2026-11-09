@@ -41,6 +41,20 @@ Pick a name and a location on the map. The location defaults to your Home Assist
 inside DMI's HARMONIE DINI model area (Northwestern Europe). Add the integration more than once to get forecasts
 for several places.
 
+### Settings
+
+The second setup step (and later the integration's **Configure** button) has:
+
+| Setting | Default | |
+|---|---|---|
+| Address on dmi.dk | nearest place | Link for the device's **Visit** button (see below) |
+| Observations from DMI weather stations | on | Measured current values, every 10 minutes |
+| Lightning near the location | on | Strikes within the radius, every 5 minutes |
+| Lightning radius | 50 km | 10–300 km |
+
+Turn observations and lightning off if you only want the forecast. Their sensors are then removed and
+nothing is requested from those APIs.
+
 ### Link to dmi.dk
 
 The device's **Visit** button opens your location on dmi.dk, which also has DMI's longer
@@ -92,6 +106,18 @@ the measurement). A value older than one hour shows as unavailable. If there is 
 The weather entity's **condition** is derived from what is measured right now (precipitation in the
 last 10 minutes, cloud cover, visibility, wind), with the forecast filling any gaps.
 
+### Lightning
+
+| Sensor | Notes |
+|---|---|
+| Lightning strikes last hour | Within the radius |
+| Lightning strikes last 10 min | Disabled by default |
+| Nearest lightning strike | Distance in km to the nearest strike in the last hour. Attributes: direction (`bearing_deg`, 0 = north), time, current (kA) |
+| Last lightning strike | Time of the most recent strike. Attributes: distance, direction, current |
+
+A strike within 20 km in the last 15 minutes sets the weather entity's condition to *lightning* (or
+*lightning-rainy* if it is raining).
+
 ## Limitations: forecast length
 
 The forecast covers **about 60 hours (2½ days)**. That is the full length of DMI's HARMONIE DINI model,
@@ -110,7 +136,7 @@ onwards. Keep DMI for the next 2½ days, where its 2 km model is at its best.
 
 ## Being kind to the free API
 
-The integration polls the forecast every 30 minutes and the observations every 10 minutes (one request per station, normally two stations, plus the station list once a day). The model only updates every 3 hours, and DMI's fair use limit is shared
+The integration polls the forecast every 30 minutes, the observations every 10 minutes (one request per station, normally two stations, plus the station list once a day) and lightning every 5 minutes. Observations and lightning can be turned off. The model only updates every 3 hours, and DMI's fair use limit is shared
 by everyone. When DMI answers with HTTP 429, the library backs off and keeps serving the last forecast.
 
 ## Development

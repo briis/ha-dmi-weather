@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+- **Lightning** near the location, from DMI's Lightning Data API, every 5 minutes. New sensors: **Lightning strikes last hour**, **Nearest lightning strike** (distance, with direction, time and current as attributes) and **Last lightning strike** (time), plus **Lightning strikes last 10 min** (disabled by default).
+- A strike within 20 km in the last 15 minutes sets the weather condition to *lightning* / *lightning-rainy*.
+- **Settings** (setup step 2 and **Configure**): turn observations and lightning on or off, and set the lightning radius (10–300 km, default 50). Turning a source off removes its sensors and stops its requests. Existing installations keep both on.
+
+### Changed
+- Requires `pydmi-weather==0.5.0`. The chance of precipitation request may now take up to 60 seconds, and a warning is only logged after 3 failed attempts in a row.
+- Setup step 2 is now called **Settings** (was "Link to dmi.dk").
+
 ## [0.3.0] - 2026-11-09
 
 ### Added

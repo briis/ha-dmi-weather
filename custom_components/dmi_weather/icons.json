@@ -46,6 +46,18 @@
       },
       "observed_sunshine": {
         "default": "mdi:weather-sunny"
+      },
+      "lightning_strikes_1h": {
+        "default": "mdi:flash"
+      },
+      "lightning_strikes_10min": {
+        "default": "mdi:flash"
+      },
+      "lightning_strike_nearest_distance": {
+        "default": "mdi:map-marker-distance"
+      },
+      "lightning_strike_last": {
+        "default": "mdi:flash"
       }
     }
   }

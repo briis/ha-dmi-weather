@@ -13,7 +13,7 @@ from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_LATITUDE, CONF_LOCATION, CONF_LONGITUDE, CONF_NAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
-from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import MockConfigEntry, async_fire_time_changed
 
@@ -21,7 +21,7 @@ from custom_components.dmi_weather.const import CONF_DMI_URL, DOMAIN
 from custom_components.dmi_weather.dmi_link import suggest_dmi_url
 from pydmi import DMIConnectionError, DMIInvalidLocationError
 
-from .conftest import make_observations_data
+from .conftest import make_lightning_data, make_observations_data
 
 
 async def _setup(hass: HomeAssistant) -> MockConfigEntry:
@@ -101,7 +101,7 @@ async def test_config_flow(hass: HomeAssistant, mock_dmi) -> None:
         )
         # step 2: dmi.dk link, pre-filled with the nearest place
         assert result["type"] is FlowResultType.FORM
-        assert result["step_id"] == "link"
+        assert result["step_id"] == "settings"
         suggested = next(
             k.description["suggested_value"]
             for k in result["data_schema"].schema
@@ -114,7 +114,12 @@ async def test_config_flow(hass: HomeAssistant, mock_dmi) -> None:
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "Home"
     assert result["data"] == {CONF_LATITUDE: 55.64, CONF_LONGITUDE: 12.08}
-    assert result["options"] == {CONF_DMI_URL: suggested}
+    assert result["options"] == {
+        CONF_DMI_URL: suggested,
+        "observations": True,
+        "lightning": True,
+        "lightning_radius": 50,
+    }
 
 
 async def test_config_flow_rejects_non_dmi_link(hass: HomeAssistant, mock_dmi) -> None:
@@ -271,3 +276,80 @@ async def test_no_stations_nearby(hass: HomeAssistant, mock_dmi, mock_obs) -> No
     assert entry.runtime_data.observations.update_interval is None  # stops polling
     assert hass.states.get("sensor.dmi_roskilde_observed_temperature") is None  # not created
     assert hass.states.get("weather.dmi_roskilde").attributes["temperature"] == 7.0
+
+
+async def test_lightning_sensors(hass: HomeAssistant, mock_dmi, mock_obs, mock_lightning) -> None:
+    mock_lightning.get_lightning = AsyncMock(
+        return_value=make_lightning_data([(35.0, 3), (12.0, 40)])
+    )
+    await _setup(hass)
+    assert hass.states.get("sensor.dmi_roskilde_lightning_strikes_last_hour").state == "2"
+    nearest = hass.states.get("sensor.dmi_roskilde_nearest_lightning_strike")
+    assert nearest.state == "12.0"
+    assert nearest.attributes["bearing_deg"] == 45
+    assert nearest.attributes["radius_km"] == 50.0
+    last = hass.states.get("sensor.dmi_roskilde_last_lightning_strike")
+    assert last.attributes["distance_km"] == 35.0
+    # 35 km away is not "here": condition stays cloudy
+    assert hass.states.get("weather.dmi_roskilde").state == "cloudy"
+
+
+async def test_thunder_nearby_sets_condition(
+    hass: HomeAssistant, mock_dmi, mock_obs, mock_lightning
+) -> None:
+    mock_lightning.get_lightning = AsyncMock(return_value=make_lightning_data([(8.0, 5)]))
+    await _setup(hass)
+    assert hass.states.get("weather.dmi_roskilde").state == "lightning"
+
+
+async def test_no_strikes_states(hass: HomeAssistant, mock_dmi, mock_obs, mock_lightning) -> None:
+    await _setup(hass)
+    assert hass.states.get("sensor.dmi_roskilde_lightning_strikes_last_hour").state == "0"
+    assert hass.states.get("sensor.dmi_roskilde_nearest_lightning_strike").state == "unknown"
+
+
+async def test_options_turn_off_sources_and_remove_sensors(
+    hass: HomeAssistant, mock_dmi, mock_obs, mock_lightning
+) -> None:
+    entry = await _setup(hass)
+    registry = er.async_get(hass)
+    assert registry.async_get_entity_id("sensor", DOMAIN, f"{entry.entry_id}_observed_temperature")
+    assert registry.async_get_entity_id("sensor", DOMAIN, f"{entry.entry_id}_lightning_strikes_1h")
+
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {CONF_DMI_URL: "", "observations": False, "lightning": False, "lightning_radius": 50},
+    )
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    await hass.async_block_till_done()  # reload
+
+    assert entry.runtime_data.observations is None
+    assert entry.runtime_data.lightning is None
+    assert not registry.async_get_entity_id(
+        "sensor", DOMAIN, f"{entry.entry_id}_observed_temperature"
+    )
+    assert not registry.async_get_entity_id(
+        "sensor", DOMAIN, f"{entry.entry_id}_lightning_strikes_1h"
+    )
+    # the forecast's lightning probability sensor is NOT a lightning-strike sensor
+    assert registry.async_get_entity_id("sensor", DOMAIN, f"{entry.entry_id}_lightning_probability")
+    # weather now uses the forecast
+    assert hass.states.get("weather.dmi_roskilde").attributes["temperature"] == 7.0
+
+
+async def test_lightning_radius_option(hass: HomeAssistant, mock_dmi, mock_lightning) -> None:
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title="DMI Roskilde",
+        unique_id="55.64_12.08",
+        data={CONF_LATITUDE: 55.64, CONF_LONGITUDE: 12.08},
+        options={"lightning_radius": 120},
+    )
+    entry.add_to_hass(hass)
+    with patch("custom_components.dmi_weather.coordinator.DMILightningAsync") as cls:
+        cls.return_value.get_lightning = AsyncMock(return_value=make_lightning_data())
+        cls.return_value.radius_km = 120
+        await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+    assert cls.call_args.kwargs["radius_km"] == 120

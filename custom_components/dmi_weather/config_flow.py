@@ -20,7 +20,15 @@ import voluptuous as vol
 from pydmi import DMIConnectionError, DMIError, DMIInvalidLocationError
 from pydmi.client_async import DMIForecastAsync
 
-from .const import CONF_DMI_URL, DEFAULT_NAME, DOMAIN
+from .const import (
+    CONF_DMI_URL,
+    CONF_LIGHTNING,
+    CONF_LIGHTNING_RADIUS,
+    CONF_OBSERVATIONS,
+    DEFAULT_LIGHTNING_RADIUS,
+    DEFAULT_NAME,
+    DOMAIN,
+)
 from .dmi_link import DMI_DK_PREFIX, is_dmi_url, suggest_dmi_url
 
 _LOGGER = logging.getLogger(__name__)
@@ -37,8 +45,38 @@ PLACEHOLDERS = {
 }
 
 
-def _link_schema() -> vol.Schema:
-    return vol.Schema({vol.Optional(CONF_DMI_URL): URL_SELECTOR})
+def _settings_schema() -> vol.Schema:
+    return vol.Schema(
+        {
+            vol.Optional(CONF_DMI_URL): URL_SELECTOR,
+            vol.Required(CONF_OBSERVATIONS, default=True): selector.BooleanSelector(),
+            vol.Required(CONF_LIGHTNING, default=True): selector.BooleanSelector(),
+            vol.Required(
+                CONF_LIGHTNING_RADIUS, default=DEFAULT_LIGHTNING_RADIUS
+            ): selector.NumberSelector(
+                selector.NumberSelectorConfig(
+                    min=10,
+                    max=300,
+                    step=5,
+                    unit_of_measurement="km",
+                    mode=selector.NumberSelectorMode.BOX,
+                )
+            ),
+        }
+    )
+
+
+def _settings_from_input(user_input: dict[str, Any]) -> tuple[dict[str, Any], dict[str, str]]:
+    """Validate the settings form; returns (options, errors)."""
+    url = (user_input.get(CONF_DMI_URL) or "").strip()
+    if url and not is_dmi_url(url):
+        return {}, {CONF_DMI_URL: "invalid_url"}
+    return {
+        CONF_DMI_URL: url,  # empty = use the suggestion
+        CONF_OBSERVATIONS: bool(user_input.get(CONF_OBSERVATIONS, True)),
+        CONF_LIGHTNING: bool(user_input.get(CONF_LIGHTNING, True)),
+        CONF_LIGHTNING_RADIUS: int(user_input.get(CONF_LIGHTNING_RADIUS, DEFAULT_LIGHTNING_RADIUS)),
+    }, {}
 
 
 class DMIConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -88,7 +126,7 @@ class DMIConfigFlow(ConfigFlow, domain=DOMAIN):
                 self._suggested_url = await self.hass.async_add_executor_job(
                     suggest_dmi_url, latitude, longitude
                 )
-                return await self.async_step_link()
+                return await self.async_step_settings()
 
         defaults = user_input or {
             CONF_NAME: DEFAULT_NAME,
@@ -111,23 +149,19 @@ class DMIConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_link(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
-        """Step 2: link to the location on dmi.dk (pre-filled with the nearest place)."""
+    async def async_step_settings(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Step 2: dmi.dk link (pre-filled with the nearest place) and optional data."""
         errors: dict[str, str] = {}
         if user_input is not None:
-            url = (user_input.get(CONF_DMI_URL) or "").strip()
-            if url and not is_dmi_url(url):
-                errors[CONF_DMI_URL] = "invalid_url"
-            else:
-                return self.async_create_entry(
-                    title=self._title,
-                    data=self._data,
-                    options={CONF_DMI_URL: url},  # empty = use the suggestion
-                )
+            options, errors = _settings_from_input(user_input)
+            if not errors:
+                return self.async_create_entry(title=self._title, data=self._data, options=options)
         return self.async_show_form(
-            step_id="link",
+            step_id="settings",
             data_schema=self.add_suggested_values_to_schema(
-                _link_schema(), user_input or {CONF_DMI_URL: self._suggested_url}
+                _settings_schema(), user_input or {CONF_DMI_URL: self._suggested_url}
             ),
             errors=errors,
             description_placeholders=PLACEHOLDERS,
@@ -135,28 +169,31 @@ class DMIConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class DMIOptionsFlow(OptionsFlowWithReload):
-    """Change the dmi.dk link later."""
+    """Change the dmi.dk link and turn observations / lightning on or off."""
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         errors: dict[str, str] = {}
         if user_input is not None:
-            url = (user_input.get(CONF_DMI_URL) or "").strip()
-            if url and not is_dmi_url(url):
-                errors[CONF_DMI_URL] = "invalid_url"
-            else:
-                return self.async_create_entry(data={CONF_DMI_URL: url})
+            options, errors = _settings_from_input(user_input)
+            if not errors:
+                return self.async_create_entry(data=options)
 
-        current = self.config_entry.options.get(
-            CONF_DMI_URL
-        ) or await self.hass.async_add_executor_job(
+        opts = self.config_entry.options
+        url = opts.get(CONF_DMI_URL) or await self.hass.async_add_executor_job(
             suggest_dmi_url,
             self.config_entry.data[CONF_LATITUDE],
             self.config_entry.data[CONF_LONGITUDE],
         )
+        current = {
+            CONF_DMI_URL: url,
+            CONF_OBSERVATIONS: opts.get(CONF_OBSERVATIONS, True),
+            CONF_LIGHTNING: opts.get(CONF_LIGHTNING, True),
+            CONF_LIGHTNING_RADIUS: opts.get(CONF_LIGHTNING_RADIUS, DEFAULT_LIGHTNING_RADIUS),
+        }
         return self.async_show_form(
             step_id="init",
             data_schema=self.add_suggested_values_to_schema(
-                _link_schema(), user_input or {CONF_DMI_URL: current}
+                _settings_schema(), user_input or current
             ),
             errors=errors,
             description_placeholders=PLACEHOLDERS,
