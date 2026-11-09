@@ -47,6 +47,7 @@ class DMISensorDescription(SensorEntityDescription):
 SENSORS: tuple[DMISensorDescription, ...] = (
     DMISensorDescription(
         key="temperature",
+        suggested_display_precision=1,
         translation_key="temperature",
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -55,6 +56,7 @@ SENSORS: tuple[DMISensorDescription, ...] = (
     ),
     DMISensorDescription(
         key="dew_point",
+        suggested_display_precision=1,
         translation_key="dew_point",
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -64,6 +66,7 @@ SENSORS: tuple[DMISensorDescription, ...] = (
     ),
     DMISensorDescription(
         key="humidity",
+        suggested_display_precision=0,
         device_class=SensorDeviceClass.HUMIDITY,
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=PERCENTAGE,
@@ -71,6 +74,7 @@ SENSORS: tuple[DMISensorDescription, ...] = (
     ),
     DMISensorDescription(
         key="pressure",
+        suggested_display_precision=1,
         translation_key="pressure",
         device_class=SensorDeviceClass.ATMOSPHERIC_PRESSURE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -79,6 +83,8 @@ SENSORS: tuple[DMISensorDescription, ...] = (
     ),
     DMISensorDescription(
         key="wind_speed",
+        suggested_display_precision=1,
+        suggested_unit_of_measurement=UnitOfSpeed.METERS_PER_SECOND,
         translation_key="wind_speed",
         device_class=SensorDeviceClass.WIND_SPEED,
         state_class=SensorStateClass.MEASUREMENT,
@@ -87,6 +93,8 @@ SENSORS: tuple[DMISensorDescription, ...] = (
     ),
     DMISensorDescription(
         key="wind_gust",
+        suggested_display_precision=1,
+        suggested_unit_of_measurement=UnitOfSpeed.METERS_PER_SECOND,
         translation_key="wind_gust",
         device_class=SensorDeviceClass.WIND_SPEED,
         state_class=SensorStateClass.MEASUREMENT,
@@ -95,6 +103,7 @@ SENSORS: tuple[DMISensorDescription, ...] = (
     ),
     DMISensorDescription(
         key="wind_bearing",
+        suggested_display_precision=0,
         translation_key="wind_bearing",
         device_class=SensorDeviceClass.WIND_DIRECTION,
         state_class=SensorStateClass.MEASUREMENT_ANGLE,
@@ -112,6 +121,7 @@ SENSORS: tuple[DMISensorDescription, ...] = (
     ),
     DMISensorDescription(
         key="cloud_cover",
+        suggested_display_precision=0,
         translation_key="cloud_cover",
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=PERCENTAGE,
@@ -119,6 +129,7 @@ SENSORS: tuple[DMISensorDescription, ...] = (
     ),
     DMISensorDescription(
         key="solar_radiation",
+        suggested_display_precision=0,
         translation_key="solar_radiation",
         device_class=SensorDeviceClass.IRRADIANCE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -127,6 +138,7 @@ SENSORS: tuple[DMISensorDescription, ...] = (
     ),
     DMISensorDescription(
         key="visibility",
+        suggested_display_precision=0,
         translation_key="visibility",
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -136,6 +148,7 @@ SENSORS: tuple[DMISensorDescription, ...] = (
     ),
     DMISensorDescription(
         key="lightning_probability",
+        suggested_display_precision=1,
         translation_key="lightning_probability",
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=PERCENTAGE,

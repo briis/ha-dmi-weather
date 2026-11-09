@@ -110,3 +110,10 @@ async def test_config_flow_invalid_location(hass: HomeAssistant) -> None:
         )
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == {"base": "invalid_location"}
+
+
+async def test_units_and_icons(hass: HomeAssistant, mock_dmi) -> None:
+    await _setup(hass)
+    for name in ("wind_speed", "wind_gust"):
+        state = hass.states.get(f"sensor.dmi_roskilde_{name}")
+        assert state.attributes["unit_of_measurement"] == "m/s", name

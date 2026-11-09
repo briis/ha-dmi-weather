@@ -1,0 +1,37 @@
+{
+  "entity": {
+    "sensor": {
+      "cloud_cover": {
+        "default": "mdi:weather-cloudy"
+      },
+      "lightning_probability": {
+        "default": "mdi:weather-lightning"
+      },
+      "precipitation_next_hour": {
+        "default": "mdi:weather-pouring"
+      },
+      "model_run": {
+        "default": "mdi:clock-start"
+      },
+      "condition": {
+        "default": "mdi:weather-partly-cloudy",
+        "state": {
+          "clear-night": "mdi:weather-night",
+          "cloudy": "mdi:weather-cloudy",
+          "fog": "mdi:weather-fog",
+          "hail": "mdi:weather-hail",
+          "lightning": "mdi:weather-lightning",
+          "lightning-rainy": "mdi:weather-lightning-rainy",
+          "partlycloudy": "mdi:weather-partly-cloudy",
+          "pouring": "mdi:weather-pouring",
+          "rainy": "mdi:weather-rainy",
+          "snowy": "mdi:weather-snowy",
+          "snowy-rainy": "mdi:weather-snowy-rainy",
+          "sunny": "mdi:weather-sunny",
+          "windy": "mdi:weather-windy",
+          "windy-variant": "mdi:weather-windy-variant"
+        }
+      }
+    }
+  }
+}
