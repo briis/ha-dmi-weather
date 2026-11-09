@@ -45,7 +45,7 @@ for several places.
 
 | Entity | Notes |
 |---|---|
-| `weather.<name>` | Current conditions from the current forecast hour, plus hourly and daily forecasts |
+| `weather.<name>` | Current conditions (interpolated between hourly steps, refreshed every 5 minutes), plus hourly and daily forecasts |
 | Temperature, Humidity, Pressure | |
 | Wind speed, Wind gust, Wind bearing | Bearing is where the wind comes *from* |
 | Precipitation next hour | mm expected during the current hour |
