@@ -31,6 +31,9 @@
           "windy": "mdi:weather-windy",
           "windy-variant": "mdi:weather-windy-variant"
         }
+      },
+      "precipitation_probability": {
+        "default": "mdi:umbrella-outline"
       }
     }
   }

@@ -127,3 +127,19 @@ async def test_current_values_refresh_without_api_calls(hass: HomeAssistant, moc
     async_fire_time_changed(hass, dt_util.utcnow() + timedelta(minutes=6))
     await hass.async_block_till_done()
     assert mock_dmi.get_forecast.await_count == calls  # refresh is local only
+
+
+async def test_precipitation_probability(
+    hass: HomeAssistant, mock_dmi, forecast_with_probability
+) -> None:
+    mock_dmi.get_forecast = AsyncMock(return_value=forecast_with_probability)
+    await _setup(hass)
+    assert hass.states.get("sensor.dmi_roskilde_chance_of_precipitation").state == "30.0"
+    resp = await hass.services.async_call(
+        WEATHER_DOMAIN,
+        SERVICE_GET_FORECASTS,
+        {"entity_id": "weather.dmi_roskilde", "type": "hourly"},
+        blocking=True,
+        return_response=True,
+    )
+    assert resp["weather.dmi_roskilde"]["forecast"][0]["precipitation_probability"] == 30.0

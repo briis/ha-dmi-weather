@@ -78,6 +78,9 @@
       },
       "model_run": {
         "name": "Model run"
+      },
+      "precipitation_probability": {
+        "name": "Chance of precipitation"
       }
     }
   }

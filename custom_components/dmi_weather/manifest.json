@@ -16,7 +16,7 @@
     "pydmi"
   ],
   "requirements": [
-    "pydmi-weather==0.2.1"
+    "pydmi-weather==0.3.0"
   ],
   "version": "0.1.0"
 }

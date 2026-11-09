@@ -108,6 +108,7 @@ class DMIWeather(DMIEntity, SingleCoordinatorWeatherEntity[DMICoordinator]):
                 native_wind_gust_speed=h.wind_gust_ms,
                 wind_bearing=h.wind_bearing_deg,
                 native_precipitation=h.precipitation_mm,
+                precipitation_probability=h.precipitation_probability_pct,
                 cloud_coverage=h.cloud_cover_pct,
             )
             for h in self.coordinator.data.hourly()
@@ -123,6 +124,7 @@ class DMIWeather(DMIEntity, SingleCoordinatorWeatherEntity[DMICoordinator]):
                 native_temperature=d.temperature_max_c,
                 native_templow=d.temperature_min_c,
                 native_precipitation=d.precipitation_mm,
+                precipitation_probability=d.precipitation_probability_pct,
                 native_wind_speed=d.wind_speed_max_ms,
                 native_wind_gust_speed=d.wind_gust_max_ms,
                 wind_bearing=d.wind_bearing_deg,

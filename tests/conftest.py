@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Generator
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, patch
 
@@ -63,3 +64,11 @@ def mock_dmi(forecast) -> Generator[AsyncMock]:
         for cls in (coord_cls, flow_cls):
             cls.return_value.get_forecast = AsyncMock(return_value=forecast)
         yield coord_cls.return_value
+
+
+@pytest.fixture
+def forecast_with_probability(forecast):
+    forecast.all_hours = [
+        replace(h, precipitation_probability_pct=30.0) for h in forecast.all_hours
+    ]
+    return forecast

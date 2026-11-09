@@ -49,6 +49,7 @@ for several places.
 | Temperature, Humidity, Pressure | |
 | Wind speed, Wind gust, Wind bearing | Bearing is where the wind comes *from* |
 | Precipitation next hour | mm expected during the current hour |
+| Chance of precipitation | Chance (%) of at least 0.1 mm during the current hour, from DMI's ensemble forecast. Also in the hourly and daily forecasts. |
 | Cloud cover, Solar radiation | Solar radiation is the instantaneous flux in W/m² |
 | Condition | Derived weather condition (DMI's API has no weather symbol) |
 | Model run | Diagnostic: start time of the HARMONIE run in use |
