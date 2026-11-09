@@ -41,6 +41,19 @@ Pick a name and a location on the map. The location defaults to your Home Assist
 inside DMI's HARMONIE DINI model area (Northwestern Europe). Add the integration more than once to get forecasts
 for several places.
 
+### Link to dmi.dk
+
+The device's **Visit** button opens your location on dmi.dk, which also has DMI's longer
+forecast. During setup, the link is filled in with the nearest place (for example
+`https://www.dmi.dk/lokation/show/DK/2620997/Gundsømagle`). To use another place, find it on
+dmi.dk and paste its address. You can change it later under the integration's **Configure**
+button. Leave it empty to use the nearest place.
+
+The nearest place is found offline, from a bundled list of Danish, Faroese and Greenlandic places
+with at least 500 inhabitants, from [GeoNames](https://www.geonames.org)
+([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)). Outside those countries, the button
+opens dmi.dk's front page.
+
 ## Entities
 
 | Entity | Notes |

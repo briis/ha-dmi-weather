@@ -11,12 +11,23 @@
         "data_description": {
           "location": "Point to forecast. Must be inside DMI's HARMONIE DINI model area (Northwestern Europe)."
         }
+      },
+      "link": {
+        "title": "Link to dmi.dk",
+        "description": "The device's \"Visit\" button opens this page on dmi.dk, which also has DMI's longer forecast. It is pre-filled with the nearest place. To use another place, find it on dmi.dk and paste the address here. Leave empty to use the nearest place.",
+        "data": {
+          "dmi_url": "Address on dmi.dk"
+        },
+        "data_description": {
+          "dmi_url": "For example https://www.dmi.dk/lokation/show/DK/2620997/Gundsømagle"
+        }
       }
     },
     "error": {
       "cannot_connect": "Could not connect to DMI",
       "invalid_location": "The location is outside DMI's forecast model area",
-      "unknown": "Unexpected error from DMI"
+      "unknown": "Unexpected error from DMI",
+      "invalid_url": "The address must start with https://www.dmi.dk/"
     },
     "abort": {
       "already_configured": "This location is already configured"
@@ -82,6 +93,23 @@
       "precipitation_probability": {
         "name": "Chance of precipitation"
       }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "DMI Weather options",
+        "description": "The device's \"Visit\" button opens this page on dmi.dk, which also has DMI's longer forecast. It is pre-filled with the nearest place. To use another place, find it on dmi.dk and paste the address here. Leave empty to use the nearest place.",
+        "data": {
+          "dmi_url": "Address on dmi.dk"
+        },
+        "data_description": {
+          "dmi_url": "For example https://www.dmi.dk/lokation/show/DK/2620997/Gundsømagle"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "The address must start with https://www.dmi.dk/"
     }
   }
 }

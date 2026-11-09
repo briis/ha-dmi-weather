@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+- The device's **Visit** button now opens the location's page on dmi.dk (with DMI's longer forecast) instead of DMI's Open Data page. The nearest place is found automatically from a bundled list of places (GeoNames, CC BY 4.0). No requests are made for this. Existing installations get the link automatically.
+- A new setup step and an options page (**Configure**) where the link can be changed to any address on dmi.dk.
+
 ## [0.2.0] - 2026-11-09
 
 ### Changed

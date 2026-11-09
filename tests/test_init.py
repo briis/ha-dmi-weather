@@ -13,10 +13,12 @@ from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_LATITUDE, CONF_LOCATION, CONF_LONGITUDE, CONF_NAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.helpers import device_registry as dr
 from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import MockConfigEntry, async_fire_time_changed
 
-from custom_components.dmi_weather.const import DOMAIN
+from custom_components.dmi_weather.const import CONF_DMI_URL, DOMAIN
+from custom_components.dmi_weather.dmi_link import suggest_dmi_url
 from pydmi import DMIConnectionError, DMIInvalidLocationError
 
 
@@ -95,9 +97,59 @@ async def test_config_flow(hass: HomeAssistant, mock_dmi) -> None:
             result["flow_id"],
             {CONF_NAME: "Home", CONF_LOCATION: {CONF_LATITUDE: 55.6412, CONF_LONGITUDE: 12.0803}},
         )
+        # step 2: dmi.dk link, pre-filled with the nearest place
+        assert result["type"] is FlowResultType.FORM
+        assert result["step_id"] == "link"
+        suggested = next(
+            k.description["suggested_value"]
+            for k in result["data_schema"].schema
+            if k == CONF_DMI_URL
+        )
+        assert suggested == "https://www.dmi.dk/lokation/show/DK/2614481/Roskilde"
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {CONF_DMI_URL: suggested}
+        )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "Home"
     assert result["data"] == {CONF_LATITUDE: 55.64, CONF_LONGITUDE: 12.08}
+    assert result["options"] == {CONF_DMI_URL: suggested}
+
+
+async def test_config_flow_rejects_non_dmi_link(hass: HomeAssistant, mock_dmi) -> None:
+    result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": "user"})
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        {CONF_NAME: "Home", CONF_LOCATION: {CONF_LATITUDE: 55.64, CONF_LONGITUDE: 12.08}},
+    )
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {CONF_DMI_URL: "https://example.com/weather"}
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {CONF_DMI_URL: "invalid_url"}
+
+
+def test_suggest_dmi_url() -> None:
+    assert suggest_dmi_url(55.7357, 12.1516) == (
+        "https://www.dmi.dk/lokation/show/DK/2620997/Gunds%C3%B8magle"
+    )
+    assert suggest_dmi_url(52.37, 4.90) == "https://www.dmi.dk"  # Amsterdam: no Danish place nearby
+
+
+async def test_device_link_and_options(hass: HomeAssistant, mock_dmi) -> None:
+    entry = await _setup(hass)
+    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, entry.entry_id)})
+    # entries created before this option existed get the nearest place automatically
+    assert device.configuration_url == "https://www.dmi.dk/lokation/show/DK/2614481/Roskilde"
+
+    own = "https://www.dmi.dk/lokation/show/DK/2620997/Gunds%C3%B8magle"
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"], {CONF_DMI_URL: own}
+    )
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    await hass.async_block_till_done()  # options flow reloads the entry
+    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, entry.entry_id)})
+    assert device.configuration_url == own
 
 
 async def test_config_flow_invalid_location(hass: HomeAssistant) -> None:

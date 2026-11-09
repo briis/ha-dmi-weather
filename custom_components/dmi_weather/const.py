@@ -9,6 +9,9 @@ DOMAIN: Final = "dmi_weather"
 
 DEFAULT_NAME: Final = "DMI"
 
+# Option: link to the location on dmi.dk ("Visit" button). Empty = nearest place.
+CONF_DMI_URL: Final = "dmi_url"
+
 # HARMONIE runs every 3 hours. Polling every 30 minutes picks up a new run
 # within half an hour and keeps the load on DMI's free API negligible.
 UPDATE_INTERVAL: Final = timedelta(minutes=30)

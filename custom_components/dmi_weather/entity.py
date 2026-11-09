@@ -26,5 +26,5 @@ class DMIEntity(CoordinatorEntity[DMICoordinator]):
             manufacturer=MANUFACTURER,
             model=MODEL,
             entry_type=DeviceEntryType.SERVICE,
-            configuration_url="https://www.dmi.dk/friedata",
+            configuration_url=coordinator.dmi_url,
         )

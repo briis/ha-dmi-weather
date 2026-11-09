@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from homeassistant.const import Platform
+from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE, Platform
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.event import async_track_time_interval
 
-from .const import REFRESH_INTERVAL
+from .const import CONF_DMI_URL, REFRESH_INTERVAL
 from .coordinator import DMIConfigEntry, DMICoordinator
+from .dmi_link import suggest_dmi_url
 
 PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.WEATHER]
 
@@ -17,6 +18,10 @@ PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.WEATHER]
 async def async_setup_entry(hass: HomeAssistant, entry: DMIConfigEntry) -> bool:
     """Set up DMI Weather from a config entry."""
     coordinator = DMICoordinator(hass, entry)
+    # "Visit" link: the user's own dmi.dk link, else the nearest place (file read -> executor).
+    coordinator.dmi_url = entry.options.get(CONF_DMI_URL) or await hass.async_add_executor_job(
+        suggest_dmi_url, entry.data[CONF_LATITUDE], entry.data[CONF_LONGITUDE]
+    )
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
