@@ -9,7 +9,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.event import async_track_time_interval
 
 from .const import CONF_DMI_URL, REFRESH_INTERVAL
-from .coordinator import DMIConfigEntry, DMICoordinator
+from .coordinator import DMIConfigEntry, DMICoordinator, DMIObservationCoordinator
 from .dmi_link import suggest_dmi_url
 
 PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.WEATHER]
@@ -23,6 +23,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: DMIConfigEntry) -> bool:
         suggest_dmi_url, entry.data[CONF_LATITUDE], entry.data[CONF_LONGITUDE]
     )
     await coordinator.async_config_entry_first_refresh()
+    # Observations are optional: a failure here must not stop the forecast.
+    coordinator.observations = DMIObservationCoordinator(hass, entry)
+    await coordinator.observations.async_refresh()
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 

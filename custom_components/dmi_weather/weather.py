@@ -18,7 +18,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import dt as dt_util
 
-from pydmi import ForecastHour
+from pydmi import ForecastHour, derive_condition
 
 from .coordinator import DMIConfigEntry, DMICoordinator
 from .entity import DMIEntity
@@ -34,7 +34,7 @@ async def async_setup_entry(
 
 
 class DMIWeather(DMIEntity, SingleCoordinatorWeatherEntity[DMICoordinator]):
-    """Current conditions (from the current forecast hour) plus forecasts."""
+    """Current conditions (observed where possible, else forecast) plus forecasts."""
 
     _attr_name = None  # use the device name
     _attr_native_temperature_unit = UnitOfTemperature.CELSIUS
@@ -50,49 +50,81 @@ class DMIWeather(DMIEntity, SingleCoordinatorWeatherEntity[DMICoordinator]):
         super().__init__(coordinator)
         self._attr_unique_id = coordinator.config_entry.entry_id
 
+    async def async_added_to_hass(self) -> None:
+        """Also re-render when new observations arrive."""
+        await super().async_added_to_hass()
+        if (obs := self.coordinator.observations) is not None:
+            self.async_on_remove(obs.async_add_listener(self._handle_coordinator_update))
+
     @property
     def _now(self) -> ForecastHour | None:
         return self.coordinator.data.current()
 
+    def _value(self, observed: str, forecast: str) -> float | None:
+        """Observed value when available, otherwise the forecast for now."""
+        obs = self.coordinator.observations
+        if obs is not None and (value := obs.value(observed)) is not None:
+            return value
+        return getattr(self._now, forecast) if self._now else None
+
     @property
     def condition(self) -> str | None:
-        return self._now.condition if self._now else None
+        """Derived from what is measured right now, the forecast fills the gaps."""
+        now = self._now
+        if now is None:
+            return None
+        obs = self.coordinator.observations
+        precip_10min = obs.value("precipitation_10min_mm") if obs else None
+        precip_rate = precip_10min * 6 if precip_10min is not None else now.precipitation_mm
+        temperature = self._value("temperature_c", "temperature_c")
+        precip_type = now.precipitation_type or (
+            "snow" if temperature is not None and temperature <= 0 else "rain"
+        )
+        return derive_condition(
+            precipitation_mm=precip_rate,
+            precipitation_type=precip_type,
+            cloud_cover_pct=self._value("cloud_cover_pct", "cloud_cover_pct"),
+            visibility_m=self._value("visibility_m", "visibility_m"),
+            lightning_probability_pct=now.lightning_probability_pct,
+            wind_speed_ms=self._value("wind_speed_ms", "wind_speed_ms"),
+            daylight=now.is_daylight,
+        )
 
     @property
     def native_temperature(self) -> float | None:
-        return self._now.temperature_c if self._now else None
+        return self._value("temperature_c", "temperature_c")
 
     @property
     def native_dew_point(self) -> float | None:
-        return self._now.dew_point_c if self._now else None
+        return self._value("dew_point_c", "dew_point_c")
 
     @property
     def humidity(self) -> float | None:
-        return self._now.humidity_pct if self._now else None
+        return self._value("humidity_pct", "humidity_pct")
 
     @property
     def native_pressure(self) -> float | None:
-        return self._now.pressure_hpa if self._now else None
+        return self._value("pressure_hpa", "pressure_hpa")
 
     @property
     def native_wind_speed(self) -> float | None:
-        return self._now.wind_speed_ms if self._now else None
+        return self._value("wind_speed_ms", "wind_speed_ms")
 
     @property
     def native_wind_gust_speed(self) -> float | None:
-        return self._now.wind_gust_ms if self._now else None
+        return self._value("wind_gust_ms", "wind_gust_ms")
 
     @property
     def wind_bearing(self) -> float | None:
-        return self._now.wind_bearing_deg if self._now else None
+        return self._value("wind_bearing_deg", "wind_bearing_deg")
 
     @property
     def cloud_coverage(self) -> float | None:
-        return self._now.cloud_cover_pct if self._now else None
+        return self._value("cloud_cover_pct", "cloud_cover_pct")
 
     @property
     def native_visibility(self) -> float | None:
-        return self._now.visibility_m if self._now else None
+        return self._value("visibility_m", "visibility_m")
 
     @callback
     def _async_forecast_hourly(self) -> list[Forecast] | None:

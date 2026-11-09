@@ -25,15 +25,17 @@ from homeassistant.const import (
     UnitOfPressure,
     UnitOfSpeed,
     UnitOfTemperature,
+    UnitOfTime,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from pydmi import Forecast, ForecastHour
+from pydmi import ATTRIBUTION, Forecast, ForecastHour
 
-from .coordinator import DMIConfigEntry, DMICoordinator
-from .entity import DMIEntity
+from .coordinator import DMIConfigEntry, DMICoordinator, DMIObservationCoordinator
+from .entity import DMIEntity, dmi_device_info
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -203,6 +205,10 @@ async def async_setup_entry(
     """Set up DMI sensors."""
     coordinator = entry.runtime_data
     async_add_entities(DMISensor(coordinator, description) for description in SENSORS)
+    if coordinator.observations is not None and not coordinator.observations.no_stations:
+        async_add_entities(
+            DMIObservationSensor(coordinator, description) for description in OBSERVATION_SENSORS
+        )
 
 
 class DMISensor(DMIEntity, SensorEntity):
@@ -224,3 +230,162 @@ class DMISensor(DMIEntity, SensorEntity):
         if hour is None or self.entity_description.value_fn is None:
             return None
         return self.entity_description.value_fn(hour)
+
+
+# --- observed values (nearest DMI station) ------------------------------------
+
+
+@dataclass(frozen=True, kw_only=True)
+class DMIObservationSensorDescription(SensorEntityDescription):
+    """`field` is the pydmi Observations field name."""
+
+    field: str
+
+
+def _obs(key, field, **kw) -> DMIObservationSensorDescription:
+    return DMIObservationSensorDescription(
+        key=key, translation_key=key, field=field, state_class=SensorStateClass.MEASUREMENT, **kw
+    )
+
+
+OBSERVATION_SENSORS: tuple[DMIObservationSensorDescription, ...] = (
+    _obs(
+        "observed_temperature",
+        "temperature_c",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        suggested_display_precision=1,
+    ),
+    _obs(
+        "observed_dew_point",
+        "dew_point_c",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        suggested_display_precision=1,
+        entity_registry_enabled_default=False,
+    ),
+    _obs(
+        "observed_humidity",
+        "humidity_pct",
+        device_class=SensorDeviceClass.HUMIDITY,
+        native_unit_of_measurement=PERCENTAGE,
+        suggested_display_precision=0,
+    ),
+    _obs(
+        "observed_pressure",
+        "pressure_hpa",
+        device_class=SensorDeviceClass.ATMOSPHERIC_PRESSURE,
+        native_unit_of_measurement=UnitOfPressure.HPA,
+        suggested_display_precision=1,
+    ),
+    _obs(
+        "observed_wind_speed",
+        "wind_speed_ms",
+        device_class=SensorDeviceClass.WIND_SPEED,
+        native_unit_of_measurement=UnitOfSpeed.METERS_PER_SECOND,
+        suggested_unit_of_measurement=UnitOfSpeed.METERS_PER_SECOND,
+        suggested_display_precision=1,
+    ),
+    _obs(
+        "observed_wind_gust",
+        "wind_gust_ms",
+        device_class=SensorDeviceClass.WIND_SPEED,
+        native_unit_of_measurement=UnitOfSpeed.METERS_PER_SECOND,
+        suggested_unit_of_measurement=UnitOfSpeed.METERS_PER_SECOND,
+        suggested_display_precision=1,
+    ),
+    DMIObservationSensorDescription(
+        key="observed_wind_bearing",
+        translation_key="observed_wind_bearing",
+        field="wind_bearing_deg",
+        device_class=SensorDeviceClass.WIND_DIRECTION,
+        state_class=SensorStateClass.MEASUREMENT_ANGLE,
+        native_unit_of_measurement=DEGREE,
+        suggested_display_precision=0,
+    ),
+    _obs(
+        "observed_precipitation_10min",
+        "precipitation_10min_mm",
+        device_class=SensorDeviceClass.PRECIPITATION,
+        native_unit_of_measurement=UnitOfPrecipitationDepth.MILLIMETERS,
+        suggested_display_precision=1,
+    ),
+    _obs(
+        "observed_precipitation_1h",
+        "precipitation_1h_mm",
+        device_class=SensorDeviceClass.PRECIPITATION,
+        native_unit_of_measurement=UnitOfPrecipitationDepth.MILLIMETERS,
+        suggested_display_precision=1,
+    ),
+    _obs(
+        "observed_cloud_cover",
+        "cloud_cover_pct",
+        native_unit_of_measurement=PERCENTAGE,
+        suggested_display_precision=0,
+    ),
+    _obs(
+        "observed_visibility",
+        "visibility_m",
+        device_class=SensorDeviceClass.DISTANCE,
+        native_unit_of_measurement=UnitOfLength.METERS,
+        suggested_display_precision=0,
+        entity_registry_enabled_default=False,
+    ),
+    _obs(
+        "observed_solar_radiation",
+        "global_radiation_wm2",
+        device_class=SensorDeviceClass.IRRADIANCE,
+        native_unit_of_measurement=UnitOfIrradiance.WATTS_PER_SQUARE_METER,
+        suggested_display_precision=0,
+    ),
+    _obs(
+        "observed_sunshine",
+        "sunshine_10min_min",
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.MINUTES,
+        suggested_display_precision=0,
+        entity_registry_enabled_default=False,
+    ),
+)
+
+
+class DMIObservationSensor(CoordinatorEntity[DMIObservationCoordinator], SensorEntity):
+    """A measured value from the nearest DMI station that measures it."""
+
+    _attr_attribution = ATTRIBUTION
+    _attr_has_entity_name = True
+    entity_description: DMIObservationSensorDescription
+
+    def __init__(
+        self, forecast: DMICoordinator, description: DMIObservationSensorDescription
+    ) -> None:
+        assert forecast.observations is not None
+        super().__init__(forecast.observations)
+        self.entity_description = description
+        self._attr_unique_id = f"{forecast.config_entry.entry_id}_{description.key}"
+        self._attr_device_info = dmi_device_info(forecast)
+
+    def _item(self):
+        data = self.coordinator.data
+        return data.values.get(self.entity_description.field) if data else None
+
+    @property
+    def available(self) -> bool:
+        return super().available and self._item() is not None
+
+    @property
+    def native_value(self) -> float | None:
+        item = self._item()
+        return item.value if item else None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, object] | None:
+        item = self._item()
+        if item is None:
+            return None
+        return {
+            "station": item.station_name,
+            "station_id": item.station_id,
+            "distance_km": item.distance_km,
+            "observed": item.observed.isoformat(),
+        }

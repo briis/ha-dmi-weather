@@ -92,6 +92,227 @@
       },
       "precipitation_probability": {
         "name": "Chance of precipitation"
+      },
+      "observed_temperature": {
+        "name": "Observed temperature",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
+      },
+      "observed_dew_point": {
+        "name": "Observed dew point",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
+      },
+      "observed_humidity": {
+        "name": "Observed humidity",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
+      },
+      "observed_pressure": {
+        "name": "Observed pressure",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
+      },
+      "observed_wind_speed": {
+        "name": "Observed wind speed",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
+      },
+      "observed_wind_gust": {
+        "name": "Observed wind gust",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
+      },
+      "observed_wind_bearing": {
+        "name": "Observed wind bearing",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
+      },
+      "observed_precipitation_10min": {
+        "name": "Observed precipitation 10 min",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
+      },
+      "observed_precipitation_1h": {
+        "name": "Observed precipitation 1 hour",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
+      },
+      "observed_cloud_cover": {
+        "name": "Observed cloud cover",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
+      },
+      "observed_visibility": {
+        "name": "Observed visibility",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
+      },
+      "observed_solar_radiation": {
+        "name": "Observed solar radiation",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
+      },
+      "observed_sunshine": {
+        "name": "Observed sunshine 10 min",
+        "state_attributes": {
+          "station": {
+            "name": "Station"
+          },
+          "station_id": {
+            "name": "Station ID"
+          },
+          "distance_km": {
+            "name": "Distance (km)"
+          },
+          "observed": {
+            "name": "Observed"
+          }
+        }
       }
     }
   },

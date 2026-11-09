@@ -58,7 +58,7 @@ opens dmi.dk's front page.
 
 | Entity | Notes |
 |---|---|
-| `weather.<name>` | Current conditions (interpolated between hourly steps, refreshed every 5 minutes), plus hourly and daily forecasts |
+| `weather.<name>` | Current conditions **measured** at the nearest DMI stations (see below), with the forecast as a fallback for anything not measured; plus hourly and daily forecasts |
 | Temperature, Humidity, Pressure | |
 | Wind speed, Wind gust, Wind bearing | Bearing is where the wind comes *from* |
 | Precipitation next hour | mm expected during the current hour |
@@ -68,7 +68,29 @@ opens dmi.dk's front page.
 | Model run | Diagnostic: start time of the HARMONIE run in use |
 | Dew point, Visibility, Lightning probability | Disabled by default |
 
-All values are **model forecasts for the nearest 2 km grid point**, not measurements.
+The sensors above are **model forecasts for the nearest 2 km grid point** (current hour), not
+measurements.
+
+### Observed values
+
+For each measurement, the nearest active DMI weather station (Synop, within 50 km) that measures
+it is used. Near Roskilde, for example, temperature, wind, pressure, precipitation and cloud cover
+come from Roskilde Lufthavn, and solar radiation from Sjælsmark. Stations report every 10 minutes.
+
+| Sensor | Notes |
+|---|---|
+| Observed temperature, humidity, pressure | Pressure at sea level |
+| Observed wind speed, wind gust, wind bearing | Speed: 10-minute mean. Gust: highest in the last 10 minutes |
+| Observed precipitation 10 min, 1 hour | |
+| Observed cloud cover, solar radiation | |
+| Observed dew point, visibility, sunshine 10 min | Disabled by default |
+
+Each observed sensor has the attributes `station`, `station_id`, `distance_km` and `observed` (time of
+the measurement). A value older than one hour shows as unavailable. If there is no station within
+50 km, the observed sensors are not created and the weather entity uses the forecast.
+
+The weather entity's **condition** is derived from what is measured right now (precipitation in the
+last 10 minutes, cloud cover, visibility, wind), with the forecast filling any gaps.
 
 ## Limitations: forecast length
 
@@ -88,7 +110,7 @@ onwards. Keep DMI for the next 2½ days, where its 2 km model is at its best.
 
 ## Being kind to the free API
 
-The integration polls every 30 minutes. The model only updates every 3 hours, and DMI's fair use limit is shared
+The integration polls the forecast every 30 minutes and the observations every 10 minutes (one request per station, normally two stations, plus the station list once a day). The model only updates every 3 hours, and DMI's fair use limit is shared
 by everyone. When DMI answers with HTTP 429, the library backs off and keeps serving the last forecast.
 
 ## Development
