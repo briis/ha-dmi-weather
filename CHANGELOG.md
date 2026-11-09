@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+- Changing a setting (e.g. the lightning radius) could make the whole integration unavailable for several minutes with timeout errors. Changing a setting reloads the integration, and every reload started from scratch: it requested the forecast, the ensemble, the station list, the stations and the lightning data from DMI in one burst. The DMI clients and their caches are now kept across reloads, so only what changed is requested.
+- A failed forecast update no longer makes everything unavailable. The last good forecast (up to 6 hours old) is kept, and the forecast is retried every 2 minutes until it succeeds. A failure in observations or lightning only affects their own sensors.
+
 ## [0.4.0] - 2026-11-09
 
 ### Added

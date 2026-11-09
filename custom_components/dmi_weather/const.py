@@ -28,6 +28,11 @@ LIGHTNING_RECENT: Final = timedelta(minutes=15)
 # within half an hour and keeps the load on DMI's free API negligible.
 UPDATE_INTERVAL: Final = timedelta(minutes=30)
 
+# If a forecast update fails, keep showing the last good forecast for up to this
+# long, and retry this often until an update succeeds.
+FORECAST_MAX_STALE: Final = timedelta(hours=6)
+FORECAST_RETRY_INTERVAL: Final = timedelta(minutes=2)
+
 # Stations report every 10 minutes.
 OBS_UPDATE_INTERVAL: Final = timedelta(minutes=10)
 
