@@ -13,6 +13,9 @@ from DMI (Danmarks Meteorologiske Institut). The data comes from DMI's free
 
 > Data: DMI, licensed [CC BY 4.0](https://www.dmi.dk/friedata/dokumentation/terms-of-use).
 > All entities carry the required attribution.
+>
+> This is a community integration and is not made or endorsed by DMI. The DMI logo is
+> used as the integration's icon to show where the data comes from.
 
 ## Installation
 
