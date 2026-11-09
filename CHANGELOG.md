@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-09
+
 ### Fixed
 - Changing a setting (e.g. the lightning radius) could make the whole integration unavailable for several minutes with timeout errors. Changing a setting reloads the integration, and every reload started from scratch: it requested the forecast, the ensemble, the station list, the stations and the lightning data from DMI in one burst. The DMI clients and their caches are now kept across reloads, so only what changed is requested.
 - A failed forecast update no longer makes everything unavailable. The last good forecast (up to 6 hours old) is kept, and the forecast is retried every 2 minutes until it succeeds. A failure in observations or lightning only affects their own sensors.
@@ -91,7 +93,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - DMI brand assets and attribution (CC BY 4.0) on all entities.
 - Release workflow that attaches `dmi_weather.zip` to each GitHub release, and CI for hassfest, Marketplace validation, tests and Ruff.
 
-[Unreleased]: https://github.com/briis/ha-dmi-weather/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/briis/ha-dmi-weather/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/briis/ha-dmi-weather/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/briis/ha-dmi-weather/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/briis/ha-dmi-weather/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/briis/ha-dmi-weather/compare/v0.2.1...v0.2.2
