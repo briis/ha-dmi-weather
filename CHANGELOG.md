@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-09
+
 ### Added
 - **Observed values** from DMI's weather stations, every 10 minutes. For each measurement, the nearest station (within 50 km) that measures it is used, for example Roskilde Lufthavn for temperature and wind, and Sjælsmark for solar radiation.
 - The weather entity's **current conditions** now come from these measurements, with the forecast as a fallback for anything not measured. The condition is derived from what is measured right now (precipitation in the last 10 minutes, cloud cover, visibility, wind).
@@ -74,7 +76,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - DMI brand assets and attribution (CC BY 4.0) on all entities.
 - Release workflow that attaches `dmi_weather.zip` to each GitHub release, and CI for hassfest, Marketplace validation, tests and Ruff.
 
-[Unreleased]: https://github.com/briis/ha-dmi-weather/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/briis/ha-dmi-weather/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/briis/ha-dmi-weather/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/briis/ha-dmi-weather/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/briis/ha-dmi-weather/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/briis/ha-dmi-weather/compare/v0.1.2...v0.2.0
