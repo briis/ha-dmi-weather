@@ -56,6 +56,22 @@ for several places.
 
 All values are **model forecasts for the nearest 2 km grid point**, not measurements.
 
+## Limitations: forecast length
+
+The forecast covers **about 60 hours (2½ days)**. That is the full length of DMI's HARMONIE DINI model,
+and nothing in the integration can extend it.
+
+- The **daily forecast** shows today plus the next two days. Later days with fewer than 12 hourly steps
+  are left out, so a partial day does not show a misleading high or low. The last day often ends in the
+  afternoon or evening.
+- The **hourly forecast** ends when the model run ends, typically 50–60 hours ahead depending on how old
+  the current run is.
+- The **7–10 day forecast on dmi.dk** comes from ECMWF's global model, which is **not** part of DMI's free
+  Open Data. It is therefore not available here.
+
+If you need a longer forecast, combine this integration with another weather integration for days 3 and
+onwards. Keep DMI for the next 2½ days, where its 2 km model is at its best.
+
 ## Being kind to the free API
 
 The integration polls every 30 minutes. The model only updates every 3 hours, and DMI's fair use limit is shared

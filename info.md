@@ -10,6 +10,8 @@ Weather forecast for Home Assistant from **DMI** (Danmarks Meteorologiske Instit
 
 Covers Denmark and the rest of Northwestern Europe inside DMI's HARMONIE model area.
 
+**Note:** the forecast only reaches about 2½ days ahead (today + 2 days). That is the full length of DMI's free model data. The longer forecast on dmi.dk is not included in DMI's Open Data.
+
 Data: DMI, licensed CC BY 4.0. This is a community integration and is not made or endorsed by DMI.
 
 See the [README](https://github.com/briis/ha-dmi-weather) for details.
