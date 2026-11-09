@@ -11,12 +11,23 @@
         "data_description": {
           "location": "Punkt der skal laves prognose for. Skal ligge inden for DMI's HARMONIE DINI-modelområde (Nordvesteuropa)."
         }
+      },
+      "link": {
+        "title": "Link til dmi.dk",
+        "description": "Enhedens \"Besøg\"-knap åbner denne side på dmi.dk, hvor DMI's længere prognose også findes. Den er udfyldt med det nærmeste sted. Vil du bruge et andet sted, så find det på dmi.dk og indsæt adressen her. Lad feltet være tomt for at bruge det nærmeste sted.",
+        "data": {
+          "dmi_url": "Adresse på dmi.dk"
+        },
+        "data_description": {
+          "dmi_url": "F.eks. {example_url}"
+        }
       }
     },
     "error": {
       "cannot_connect": "Kunne ikke forbinde til DMI",
       "invalid_location": "Placeringen ligger uden for DMI's prognosemodel",
-      "unknown": "Uventet fejl fra DMI"
+      "unknown": "Uventet fejl fra DMI",
+      "invalid_url": "Adressen skal starte med {dmi_prefix}"
     },
     "abort": {
       "already_configured": "Denne placering er allerede konfigureret"
@@ -82,6 +93,23 @@
       "precipitation_probability": {
         "name": "Nedbørssandsynlighed"
       }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "DMI Vejr indstillinger",
+        "description": "Enhedens \"Besøg\"-knap åbner denne side på dmi.dk, hvor DMI's længere prognose også findes. Den er udfyldt med det nærmeste sted. Vil du bruge et andet sted, så find det på dmi.dk og indsæt adressen her. Lad feltet være tomt for at bruge det nærmeste sted.",
+        "data": {
+          "dmi_url": "Adresse på dmi.dk"
+        },
+        "data_description": {
+          "dmi_url": "F.eks. {example_url}"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Adressen skal starte med {dmi_prefix}"
     }
   }
 }

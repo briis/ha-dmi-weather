@@ -26,6 +26,7 @@ class DMICoordinator(DataUpdateCoordinator[Forecast]):
     config_entry: DMIConfigEntry
 
     def __init__(self, hass: HomeAssistant, entry: DMIConfigEntry) -> None:
+        self.dmi_url: str = "https://www.dmi.dk"
         super().__init__(
             hass,
             _LOGGER,
