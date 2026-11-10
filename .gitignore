@@ -218,3 +218,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+.devcontainer-lock.json
+.claude/settings.json
+.claude/settings.local.json
+
+# Home Assistant configuration
+config/*
+!config/configuration.yaml
