@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-11-17
+
 ### Added
 - **Max station distance for the weather entity** (Settings, 0–50 km, default 50). The weather entity only uses a measurement if its station is within this distance; otherwise it uses the forecast for the location itself. 0 = forecast only. A station 15–20 km away can have quite different weather: on a clear night the airport cools down fast while it stays cloudy and several degrees warmer at home, and its cloud cover can turn the condition *sunny* under an overcast sky. The **Observed** sensors are not affected and still show the nearest station's values. Existing installations keep the current behaviour (50 km).
 
