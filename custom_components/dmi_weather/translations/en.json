@@ -18,12 +18,14 @@
         "data": {
           "dmi_url": "Address on dmi.dk",
           "observations": "Observations from DMI weather stations",
+          "observations_max_distance": "Max station distance for the weather entity",
           "lightning": "Lightning near the location",
           "lightning_radius": "Lightning radius"
         },
         "data_description": {
           "dmi_url": "For example {example_url}",
           "observations": "Measured current values from the nearest stations, every 10 minutes",
+          "observations_max_distance": "The weather entity uses a measurement only if its station is at most this far away, otherwise the forecast (0-50 km, 0 = forecast only). The observed sensors are not affected.",
           "lightning": "Strikes within the radius, every 5 minutes",
           "lightning_radius": "How far away strikes are counted (10-300 km)"
         }
@@ -410,12 +412,14 @@
         "data": {
           "dmi_url": "Address on dmi.dk",
           "observations": "Observations from DMI weather stations",
+          "observations_max_distance": "Max station distance for the weather entity",
           "lightning": "Lightning near the location",
           "lightning_radius": "Lightning radius"
         },
         "data_description": {
           "dmi_url": "For example {example_url}",
           "observations": "Measured current values from the nearest stations, every 10 minutes",
+          "observations_max_distance": "The weather entity uses a measurement only if its station is at most this far away, otherwise the forecast (0-50 km, 0 = forecast only). The observed sensors are not affected.",
           "lightning": "Strikes within the radius, every 5 minutes",
           "lightning_radius": "How far away strikes are counted (10-300 km)"
         }

@@ -66,7 +66,7 @@ class DMIWeather(DMIEntity, SingleCoordinatorWeatherEntity[DMICoordinator]):
     def _value(self, observed: str, forecast: str) -> float | None:
         """Observed value when available, otherwise the forecast for now."""
         obs = self.coordinator.observations
-        if obs is not None and (value := obs.value(observed)) is not None:
+        if obs is not None and (value := obs.weather_value(observed)) is not None:
             return value
         return getattr(self._now, forecast) if self._now else None
 
@@ -77,7 +77,7 @@ class DMIWeather(DMIEntity, SingleCoordinatorWeatherEntity[DMICoordinator]):
         if now is None:
             return None
         obs = self.coordinator.observations
-        precip_10min = obs.value("precipitation_10min_mm") if obs else None
+        precip_10min = obs.weather_value("precipitation_10min_mm") if obs else None
         precip_rate = precip_10min * 6 if precip_10min is not None else now.precipitation_mm
         temperature = self._value("temperature_c", "temperature_c")
         precip_type = now.precipitation_type or (

@@ -18,12 +18,14 @@
         "data": {
           "dmi_url": "Adresse på dmi.dk",
           "observations": "Observationer fra DMI's vejrstationer",
+          "observations_max_distance": "Maks. stationsafstand for vejr-entiteten",
           "lightning": "Lyn nær placeringen",
           "lightning_radius": "Radius for lyn"
         },
         "data_description": {
           "dmi_url": "F.eks. {example_url}",
           "observations": "Målte aktuelle værdier fra de nærmeste stationer, hvert 10. minut",
+          "observations_max_distance": "Vejr-entiteten bruger kun en måling, hvis stationen højst er så langt væk, ellers prognosen (0-50 km, 0 = kun prognose). Målt-sensorerne påvirkes ikke.",
           "lightning": "Nedslag inden for radius, hvert 5. minut",
           "lightning_radius": "Hvor langt væk nedslag tælles med (10-300 km)"
         }
@@ -410,12 +412,14 @@
         "data": {
           "dmi_url": "Adresse på dmi.dk",
           "observations": "Observationer fra DMI's vejrstationer",
+          "observations_max_distance": "Maks. stationsafstand for vejr-entiteten",
           "lightning": "Lyn nær placeringen",
           "lightning_radius": "Radius for lyn"
         },
         "data_description": {
           "dmi_url": "F.eks. {example_url}",
           "observations": "Målte aktuelle værdier fra de nærmeste stationer, hvert 10. minut",
+          "observations_max_distance": "Vejr-entiteten bruger kun en måling, hvis stationen højst er så langt væk, ellers prognosen (0-50 km, 0 = kun prognose). Målt-sensorerne påvirkes ikke.",
           "lightning": "Nedslag inden for radius, hvert 5. minut",
           "lightning_radius": "Hvor langt væk nedslag tælles med (10-300 km)"
         }

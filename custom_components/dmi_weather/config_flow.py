@@ -24,9 +24,11 @@ from .const import (
     CONF_DMI_URL,
     CONF_LIGHTNING,
     CONF_LIGHTNING_RADIUS,
+    CONF_OBS_MAX_DISTANCE,
     CONF_OBSERVATIONS,
     DEFAULT_LIGHTNING_RADIUS,
     DEFAULT_NAME,
+    DEFAULT_OBS_MAX_DISTANCE,
     DOMAIN,
 )
 from .dmi_link import DMI_DK_PREFIX, is_dmi_url, suggest_dmi_url
@@ -50,6 +52,17 @@ def _settings_schema() -> vol.Schema:
         {
             vol.Optional(CONF_DMI_URL): URL_SELECTOR,
             vol.Required(CONF_OBSERVATIONS, default=True): selector.BooleanSelector(),
+            vol.Required(
+                CONF_OBS_MAX_DISTANCE, default=DEFAULT_OBS_MAX_DISTANCE
+            ): selector.NumberSelector(
+                selector.NumberSelectorConfig(
+                    min=0,
+                    max=50,
+                    step=1,
+                    unit_of_measurement="km",
+                    mode=selector.NumberSelectorMode.BOX,
+                )
+            ),
             vol.Required(CONF_LIGHTNING, default=True): selector.BooleanSelector(),
             vol.Required(
                 CONF_LIGHTNING_RADIUS, default=DEFAULT_LIGHTNING_RADIUS
@@ -74,6 +87,7 @@ def _settings_from_input(user_input: dict[str, Any]) -> tuple[dict[str, Any], di
     return {
         CONF_DMI_URL: url,  # empty = use the suggestion
         CONF_OBSERVATIONS: bool(user_input.get(CONF_OBSERVATIONS, True)),
+        CONF_OBS_MAX_DISTANCE: int(user_input.get(CONF_OBS_MAX_DISTANCE, DEFAULT_OBS_MAX_DISTANCE)),
         CONF_LIGHTNING: bool(user_input.get(CONF_LIGHTNING, True)),
         CONF_LIGHTNING_RADIUS: int(user_input.get(CONF_LIGHTNING_RADIUS, DEFAULT_LIGHTNING_RADIUS)),
     }, {}
@@ -187,6 +201,7 @@ class DMIOptionsFlow(OptionsFlowWithReload):
         current = {
             CONF_DMI_URL: url,
             CONF_OBSERVATIONS: opts.get(CONF_OBSERVATIONS, True),
+            CONF_OBS_MAX_DISTANCE: opts.get(CONF_OBS_MAX_DISTANCE, DEFAULT_OBS_MAX_DISTANCE),
             CONF_LIGHTNING: opts.get(CONF_LIGHTNING, True),
             CONF_LIGHTNING_RADIUS: opts.get(CONF_LIGHTNING_RADIUS, DEFAULT_LIGHTNING_RADIUS),
         }

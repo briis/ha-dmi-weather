@@ -132,7 +132,10 @@ class DMIObservationCoordinator(DataUpdateCoordinator[Observations | None]):
 
     config_entry: DMIConfigEntry
 
-    def __init__(self, hass: HomeAssistant, entry: DMIConfigEntry) -> None:
+    def __init__(
+        self, hass: HomeAssistant, entry: DMIConfigEntry, weather_max_distance_km: float
+    ) -> None:
+        self.weather_max_distance_km = weather_max_distance_km
         super().__init__(
             hass,
             _LOGGER,
@@ -172,6 +175,21 @@ class DMIObservationCoordinator(DataUpdateCoordinator[Observations | None]):
         if not self.last_update_success or self.data is None:
             return None
         return self.data.get(name)
+
+    def weather_value(self, name: str) -> float | None:
+        """Observed value for the weather entity: only from a station near enough.
+
+        A station 15-20 km away can have quite different weather (clear sky and
+        a cold night at the airport, low cloud at home), so the weather entity
+        only uses stations within the configured distance. Beyond it the entity
+        falls back to the forecast for the location itself.
+        """
+        if not self.last_update_success or self.data is None:
+            return None
+        item = self.data.values.get(name)
+        if item is None or item.distance_km > self.weather_max_distance_km:
+            return None
+        return item.value
 
 
 class DMILightningCoordinator(DataUpdateCoordinator[Lightning]):
