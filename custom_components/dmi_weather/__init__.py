@@ -13,8 +13,10 @@ from .const import (
     CONF_DMI_URL,
     CONF_LIGHTNING,
     CONF_LIGHTNING_RADIUS,
+    CONF_OBS_MAX_DISTANCE,
     CONF_OBSERVATIONS,
     DEFAULT_LIGHTNING_RADIUS,
+    DEFAULT_OBS_MAX_DISTANCE,
     REFRESH_INTERVAL,
 )
 from .coordinator import (
@@ -41,7 +43,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: DMIConfigEntry) -> bool:
     # Observations and lightning are optional (options, default on). A failure in
     # either must not stop the forecast, so no first_refresh here.
     if entry.options.get(CONF_OBSERVATIONS, True):
-        coordinator.observations = DMIObservationCoordinator(hass, entry)
+        coordinator.observations = DMIObservationCoordinator(
+            hass, entry, entry.options.get(CONF_OBS_MAX_DISTANCE, DEFAULT_OBS_MAX_DISTANCE)
+        )
         await coordinator.observations.async_refresh()
     if entry.options.get(CONF_LIGHTNING, True):
         coordinator.lightning = DMILightningCoordinator(

@@ -117,6 +117,7 @@ async def test_config_flow(hass: HomeAssistant, mock_dmi) -> None:
     assert result["options"] == {
         CONF_DMI_URL: suggested,
         "observations": True,
+        "observations_max_distance": 50,
         "lightning": True,
         "lightning_radius": 50,
     }
@@ -244,6 +245,60 @@ async def test_weather_uses_observations(hass: HomeAssistant, mock_dmi, mock_obs
     assert hass.states.get("sensor.dmi_roskilde_temperature").state == "7.0"
 
 
+async def _set_obs_distance(hass: HomeAssistant, entry, distance: int) -> None:
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {
+            CONF_DMI_URL: "",
+            "observations": True,
+            "observations_max_distance": distance,
+            "lightning": True,
+            "lightning_radius": 50,
+        },
+    )
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    await hass.async_block_till_done()  # reload
+
+
+async def test_weather_ignores_stations_beyond_max_distance(
+    hass: HomeAssistant, mock_dmi, mock_obs
+) -> None:
+    """Roskilde Lufthavn is 17.1 km away: with a 10 km limit the weather entity uses
+    the forecast, while the observed sensors keep showing the station's values."""
+    mock_obs.get_observations = AsyncMock(
+        return_value=make_observations_data(temperature_c=1.4, cloud_cover_pct=0.0)
+    )
+    entry = await _setup(hass)
+    assert hass.states.get("weather.dmi_roskilde").attributes["temperature"] == 1.4
+
+    await _set_obs_distance(hass, entry, 10)
+    assert entry.runtime_data.observations.weather_max_distance_km == 10
+    state = hass.states.get("weather.dmi_roskilde")
+    assert state.attributes["temperature"] == 7.0  # forecast
+    assert state.attributes["pressure"] == 1023.2  # forecast
+    assert hass.states.get("sensor.dmi_roskilde_observed_temperature").state == "1.4"
+
+    await _set_obs_distance(hass, entry, 20)
+    assert hass.states.get("weather.dmi_roskilde").attributes["temperature"] == 1.4
+
+
+async def test_weather_max_distance_zero_means_forecast_only(
+    hass: HomeAssistant, mock_dmi, mock_obs
+) -> None:
+    mock_obs.get_observations = AsyncMock(
+        return_value=make_observations_data(precipitation_10min_mm=0.2)
+    )
+    entry = await _setup(hass)
+    assert hass.states.get("weather.dmi_roskilde").state == "rainy"  # observed rain
+
+    await _set_obs_distance(hass, entry, 0)
+    state = hass.states.get("weather.dmi_roskilde")
+    assert state.attributes["temperature"] == 7.0
+    assert state.state != "rainy"  # condition from the forecast now
+    assert hass.states.get("sensor.dmi_roskilde_observed_temperature").state == "6.6"
+
+
 async def test_observed_rain_sets_condition(hass: HomeAssistant, mock_dmi, mock_obs) -> None:
     mock_obs.get_observations = AsyncMock(
         return_value=make_observations_data(precipitation_10min_mm=0.2)
@@ -319,7 +374,13 @@ async def test_options_turn_off_sources_and_remove_sensors(
     result = await hass.config_entries.options.async_init(entry.entry_id)
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
-        {CONF_DMI_URL: "", "observations": False, "lightning": False, "lightning_radius": 50},
+        {
+            CONF_DMI_URL: "",
+            "observations": False,
+            "observations_max_distance": 50,
+            "lightning": False,
+            "lightning_radius": 50,
+        },
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     await hass.async_block_till_done()  # reload

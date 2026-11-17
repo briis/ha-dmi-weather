@@ -15,6 +15,12 @@ CONF_DMI_URL: Final = "dmi_url"
 # Optional data sources (options). Both on by default; existing entries without
 # the option behave as "on".
 CONF_OBSERVATIONS: Final = "observations"
+# Farthest station whose measurements the weather entity may use (km). Beyond it
+# the weather entity uses the forecast; the "observed" sensors are unaffected.
+# 0 = weather entity never uses observations. Default = pydmi's own limit, so
+# existing entries keep their behaviour.
+CONF_OBS_MAX_DISTANCE: Final = "observations_max_distance"
+DEFAULT_OBS_MAX_DISTANCE: Final = 50
 CONF_LIGHTNING: Final = "lightning"
 CONF_LIGHTNING_RADIUS: Final = "lightning_radius"
 DEFAULT_LIGHTNING_RADIUS: Final = 50

@@ -49,6 +49,7 @@ The second setup step (and later the integration's **Configure** button) has:
 |---|---|---|
 | Address on dmi.dk | nearest place | Link for the device's **Visit** button (see below) |
 | Observations from DMI weather stations | on | Measured current values, every 10 minutes |
+| Max station distance for the weather entity | 50 km | 0–50 km. Farther stations are ignored by the weather entity, which uses the forecast instead. 0 = forecast only |
 | Lightning near the location | on | Strikes within the radius, every 5 minutes |
 | Lightning radius | 50 km | 10–300 km |
 
@@ -102,6 +103,13 @@ come from Roskilde Lufthavn, and solar radiation from Sjælsmark. Stations repor
 Each observed sensor has the attributes `station`, `station_id`, `distance_km` and `observed` (time of
 the measurement). A value older than one hour shows as unavailable. If there is no station within
 50 km, the observed sensors are not created and the weather entity uses the forecast.
+
+The weather entity only uses a measurement if its station is within **Max station distance for the
+weather entity**. The nearest station can be 15–20 km away and have different weather: on a clear
+night an airport station can be several degrees colder than a place under low cloud, and its cloud
+cover can make the condition *sunny* under an overcast sky. If that happens where you live, set the
+distance below the station's `distance_km` and the weather entity uses the forecast for your
+location. The observed sensors always show the nearest station.
 
 The weather entity's **condition** is derived from what is measured right now (precipitation in the
 last 10 minutes, cloud cover, visibility, wind), with the forecast filling any gaps.
